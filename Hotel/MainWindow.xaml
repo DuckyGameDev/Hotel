@@ -5,10 +5,28 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hotel"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+           Title="Просмотр номеров" Height="450" Width="800">
     <Grid>
-        <StackPanel>
-            <Button></Button>
+        <!-- Список номеров -->
+        <ListView Name="RoomsListView" Margin="10">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="ID" DisplayMemberBinding="{Binding RoomId}" Width="50"/>
+                    <GridViewColumn Header="Номер" DisplayMemberBinding="{Binding RoomNumber}" Width="100"/>
+                    <GridViewColumn Header="Категория" DisplayMemberBinding="{Binding Category.CategoryName}" Width="150"/>
+                    <GridViewColumn Header="Описание" DisplayMemberBinding="{Binding Category.Description}" Width="200"/>
+                    <GridViewColumn Header="Цена за ночь" DisplayMemberBinding="{Binding Category.PricePerNight, StringFormat={}{0:C}}" Width="100"/>
+                    <GridViewColumn Header="Статус" DisplayMemberBinding="{Binding Status}" Width="100"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <!-- Панель управления -->
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="10">
+            <Button Content="Добавить номер" Width="120" Margin="0 0 10 0" Click="AddRoom_Click"/>
+            <Button Content="Редактировать" Width="120" Margin="0 0 10 0" Click="EditRoom_Click"/>
+            <Button Content="Удалить" Width="120" Margin="0 0 10 0" Click="DeleteRoom_Click"/>
+            <Button Content="Бронировать" Width="120" Click="BookRoomButton_Click"/>
         </StackPanel>
     </Grid>
 </Window>
