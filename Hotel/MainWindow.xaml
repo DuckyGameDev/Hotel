@@ -7,8 +7,128 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <StackPanel>
-            <Button></Button>
-        </StackPanel>
-    </Grid>
+        <!-- Основной контейнер -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <!-- Панель фильтров (пока пустая) -->
+                <ColumnDefinition Width="*"/>
+                <!-- Список номеров -->
+            </Grid.ColumnDefinitions>
+
+            <!-- Левая панель (пока заглушка) -->
+            <Border Grid.Column="0" Background="#F5F9FF" BorderBrush="#E0E9FF" BorderThickness="0 0 1 0">
+                <TextBlock Text="Фильтры будут здесь" 
+                       HorizontalAlignment="Center" 
+                       VerticalAlignment="Center"
+                       Foreground="#4A6FAE"/>
+            </Border>
+
+            <!-- Правая часть - список номеров -->
+            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="20">
+                    <!-- Заголовок -->
+                    <TextBlock Text="Доступные номера" 
+                           FontSize="24" 
+                           FontWeight="SemiBold"
+                           Margin="0 0 0 20"
+                           Foreground="#2C3E50"/>
+
+                    <!-- Контейнер номеров -->
+                    <ItemsControl ItemsSource="{Binding Rooms}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <!-- Карточка номера -->
+                                <Border Background="White" 
+                                    BorderBrush="#E0E9FF" 
+                                    BorderThickness="1"
+                                    CornerRadius="8"
+                                    Margin="0 0 0 20"
+                                    Padding="15">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="200"/>
+                                            <!-- Изображение -->
+                                            <ColumnDefinition Width="*"/>
+                                            <!-- Описание -->
+                                            <ColumnDefinition Width="150"/>
+                                            <!-- Цена и кнопка -->
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Изображение номера -->
+                                        <Border Grid.Column="0" 
+                                            Background="#E0E9FF" 
+                                            Height="150"
+                                            CornerRadius="4">
+                                            <Image Source="{Binding ImageUrl}" 
+                                               Stretch="UniformToFill"/>
+                                        </Border>
+
+                                        <!-- Описание номера -->
+                                        <StackPanel Grid.Column="1" Margin="15 0">
+                                            <TextBlock Text="{Binding RoomName}" 
+                                                   FontSize="18" 
+                                                   FontWeight="SemiBold"
+                                                   Foreground="#2C3E50"/>
+
+                                            <TextBlock Text="{Binding Description}" 
+                                                   Margin="0 5 0 0"
+                                                   TextWrapping="Wrap"
+                                                   Foreground="#555"/>
+
+                                            <StackPanel Orientation="Horizontal" Margin="0 10 0 0">
+                                                <TextBlock Text="Гостей: " 
+                                                       Foreground="#555"/>
+                                                <TextBlock Text="{Binding MaxGuests}" 
+                                                       FontWeight="SemiBold"/>
+                                            </StackPanel>
+
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="Площадь: " 
+                                                       Foreground="#555"/>
+                                                <TextBlock Text="{Binding Area}" 
+                                                       FontWeight="SemiBold"/>
+                                                <TextBlock Text=" м²"/>
+                                            </StackPanel>
+
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="Тип номера: " 
+                                                       Foreground="#555"/>
+                                                <TextBlock Text="{Binding RoomType}" 
+                                                       FontWeight="SemiBold"/>
+                                            </StackPanel>
+                                        </StackPanel>
+
+                                        <!-- Блок с ценой и кнопкой -->
+                                        <StackPanel Grid.Column="2" 
+                                                VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding PricePerNight, StringFormat='{}{0} ₽/ночь'}" 
+                                                   FontSize="20" 
+                                                   FontWeight="Bold"
+                                                   Foreground="#2C3E50"
+                                                   HorizontalAlignment="Right"/>
+
+                                            <TextBlock Text="Быстрое бронирование" 
+                                                   FontSize="12"
+                                                   Foreground="#4A6FAE"
+                                                   Margin="0 5 0 10"
+                                                   HorizontalAlignment="Right"/>
+
+                                            <Button Content="Забронировать" 
+                                                Background="#4A6FAE" 
+                                                Foreground="White"
+                                                BorderBrush="Transparent"
+                                                Padding="15 5"
+                                                FontWeight="SemiBold"
+                                                Cursor="Hand"
+                                                Command="{Binding BookCommand}"
+                                                HorizontalAlignment="Right"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
 </Window>
