@@ -41,12 +41,14 @@ namespace Hotel
 
         private void AddRoom_Click(object sender, RoutedEventArgs e)
         {
-            var editForm = new RoomEditWindow(new Room());
+            var editForm = new RoomEditWindow(new Room
+            {
+                Status = "свободен" // Устанавливаем статус по умолчанию
+            });
+
             if (editForm.ShowDialog() == true)
             {
-                _context.Rooms.Add(editForm.Room);
-                _context.SaveChanges();
-                LoadRooms();
+                LoadRooms(); // Обновляем список
             }
         }
 
@@ -57,7 +59,6 @@ namespace Hotel
                 var editForm = new RoomEditWindow(selectedRoom);
                 if (editForm.ShowDialog() == true)
                 {
-                    _context.SaveChanges();
                     LoadRooms();
                 }
             }

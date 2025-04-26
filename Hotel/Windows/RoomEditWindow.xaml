@@ -5,27 +5,28 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hotel.Windows"
         mc:Ignorable="d"
-        Title="RoomEditWindow" Height="450" Width="800">
+        Title="Редактирование номера" Height="300" Width="400">
     <StackPanel Margin="15">
         <!-- Номер комнаты -->
         <TextBlock Text="Номер комнаты:" Margin="0 0 0 5"/>
-        <TextBox Text="{Binding RoomNumber}" Margin="0 0 0 10"/>
-        
+        <TextBox x:Name="RoomNumberTextBox" Text="{Binding RoomNumber, UpdateSourceTrigger=PropertyChanged}" 
+                Margin="0 0 0 10"/>
+
         <!-- Категория -->
         <TextBlock Text="Категория:" Margin="0 0 0 5"/>
-        <ComboBox Name="CategoryComboBox"
-                  DisplayMemberPath="CategoryName"
-                  SelectedValuePath="CategoryId"
-                  SelectedValue="{Binding CategoryId}"
-                  Margin="0 0 0 10"/>
-        
+        <ComboBox x:Name="CategoryComboBox"
+                 DisplayMemberPath="CategoryName"
+                 SelectedValuePath="CategoryId"
+                 SelectedValue="{Binding CategoryId}"
+                 Margin="0 0 0 10"/>
+
         <!-- Статус -->
         <TextBlock Text="Статус:" Margin="0 0 0 5"/>
-        <ComboBox SelectedItem="{Binding Status}" Margin="0 0 0 15">
+        <ComboBox x:Name="StatusComboBox" SelectedValue="{Binding Status}" Margin="0 0 0 15">
             <ComboBoxItem Content="свободен"/>
             <ComboBoxItem Content="занят"/>
         </ComboBox>
-        
+
         <!-- Кнопки -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="Сохранить" Width="100" Margin="0 0 10 0" Click="Save_Click"/>
