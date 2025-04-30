@@ -21,7 +21,7 @@
                         Foreground="White"
                         BorderThickness="0"
                         FontWeight="Bold"
-                        Margin="10 0 0 0"/>
+                        Margin="10 0 0 0" Click="Button_Click"/>
                 <TextBlock Text="Выбирайте лучшее" 
                            Foreground="White"
                            VerticalAlignment="Center"

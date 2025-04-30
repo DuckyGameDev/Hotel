@@ -16,6 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Images\avatar.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.4">
       <PrivateAssets>all</PrivateAssets>
@@ -36,6 +40,12 @@
     <Folder Include="Models\ViewModels\" />
     <Folder Include="Services\Interfaces\" />
     <Folder Include="Services\Implementations\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\avatar.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

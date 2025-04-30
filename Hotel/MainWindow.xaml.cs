@@ -103,5 +103,12 @@ namespace Hotel
                     MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            ProfileViewWindow profileViewWindow = new ProfileViewWindow();
+            profileViewWindow.Show();
+            this.Close();
+        }
     }
 }

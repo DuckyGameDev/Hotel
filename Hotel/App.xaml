@@ -23,5 +23,33 @@
             </Setter>
         </Style>
         <converters:StatusToBrushConverter x:Key="StatusToBrushConverter"/>
+
+        <Style x:Key="MenuButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="15 10"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Foreground" Value="#0D47A1"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="Transparent">
+                            <ContentPresenter HorizontalAlignment="Left" 
+                                         VerticalAlignment="Center"
+                                         Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FFBBDEFB"/>
+                    <Setter Property="Foreground" Value="#01579B"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
     </Application.Resources>
 </Application>

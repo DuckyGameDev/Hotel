@@ -1,0 +1,141 @@
+﻿<Window x:Class="Hotel.Windows.ProfileViewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Hotel.Windows"
+        mc:Ignorable="d"
+        Title="ProfileViewWindow" Height="450" Width="800">
+    <Grid Background="#FFF0F5FF">
+        <!-- Шапка с заголовком -->
+        <DockPanel>
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" 
+                       Background="#FF4A6FAE" Height="50">
+                <Button Content="На главную" 
+                        Width="100" 
+                        Background="Transparent" 
+                        Foreground="White"
+                        BorderThickness="0"
+                        FontWeight="Bold"
+                        Margin="10 0 0 0"
+                        Click="BackButton_Click"/>
+                <TextBlock Text="Мой профиль" 
+                          Foreground="White"
+                          VerticalAlignment="Center"
+                          FontSize="16"
+                          FontWeight="Bold"
+                          Margin="20 0 0 0"/>
+            </StackPanel>
+
+            <!-- Основное содержимое -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Боковое меню -->
+                <Border Grid.Column="0" Background="#FFE3F2FD" Margin="0 0 10 0">
+                    <StackPanel>
+                        <!-- Аватарка -->
+                        <Border Width="120" Height="120" CornerRadius="60" 
+                               Background="#FFBBDEFB" Margin="0 20" HorizontalAlignment="Center">
+                            <Image x:Name="UserImage" Source="/Images/avatar.png" Stretch="Fill"/>
+                        </Border>
+
+                        <!-- Меню -->
+                        <Button Content="Мои данные" 
+                               Style="{StaticResource MenuButtonStyle}"
+                               Click="ViewProfile_Click"/>
+                        <Button Content="Мои бронирования" 
+                               Style="{StaticResource MenuButtonStyle}"
+                               Click="ViewBookings_Click"/>
+                        <Button Content="SPA-процедуры" 
+                               Style="{StaticResource MenuButtonStyle}"
+                               Click="ViewSpa_Click"/>
+                        <Button Content="Выход" 
+                               Style="{StaticResource MenuButtonStyle}"
+                               Click="Logout_Click"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Основная информация -->
+                <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="10">
+                        <!-- Заголовок -->
+                        <TextBlock Text="Личные данные" 
+                                  FontSize="18" FontWeight="Bold" Margin="0 0 0 20"/>
+
+                        <!-- Информация о пользователе -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Имя -->
+                            <TextBlock Text="Имя:" Grid.Row="0" Grid.Column="0" 
+                                      Margin="0 0 10 10" FontWeight="Bold"/>
+                            <TextBox Text="{Binding User.FullName}" Grid.Row="0" Grid.Column="1" 
+                                    Margin="0 0 0 10" IsReadOnly="True"/>
+
+                            <!-- Паспортные данные -->
+                            <TextBlock Text="Паспорт:" Grid.Row="1" Grid.Column="0" 
+                                      Margin="0 0 10 10" FontWeight="Bold"/>
+                            <TextBox Text="{Binding User.PassportData}" Grid.Row="1" Grid.Column="1" 
+                                    Margin="0 0 0 10" IsReadOnly="True"/>
+
+                            <!-- Телефон -->
+                            <TextBlock Text="Телефон:" Grid.Row="2" Grid.Column="0" 
+                                      Margin="0 0 10 10" FontWeight="Bold"/>
+                            <TextBox Text="{Binding User.ContactPhone}" Grid.Row="2" Grid.Column="1" 
+                                    Margin="0 0 0 10" IsReadOnly="True"/>
+
+                            <!-- Email -->
+                            <TextBlock Text="Email:" Grid.Row="3" Grid.Column="0" 
+                                      Margin="0 0 10 10" FontWeight="Bold"/>
+                            <TextBox Text="{Binding User.ContactEmail}" Grid.Row="3" Grid.Column="1" 
+                                    Margin="0 0 0 10" IsReadOnly="True"/>
+
+                            <!-- Описание -->
+                            <TextBlock Text="О себе:" Grid.Row="4" Grid.Column="0" 
+                                      Margin="0 0 10 10" FontWeight="Bold"/>
+                            <TextBox Text="{Binding User.Description}" Grid.Row="4" Grid.Column="1" 
+                                    Margin="0 0 0 10" Height="60" TextWrapping="Wrap" 
+                                    AcceptsReturn="True" VerticalScrollBarVisibility="Auto" 
+                                    IsReadOnly="True"/>
+                        </Grid>
+
+                        <!-- Статистика -->
+                        <Border Background="White" CornerRadius="5" Margin="0 20" Padding="10">
+                            <StackPanel>
+                                <TextBlock Text="Статистика" FontWeight="Bold" Margin="0 0 0 10"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Всего бронирований:"/>
+                                        <TextBlock Text="{Binding BookingsCount}" FontSize="16" FontWeight="Bold"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="Предстоящие:"/>
+                                        <TextBlock Text="{Binding UpcomingBookings}" FontSize="16" FontWeight="Bold"/>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </DockPanel>
+    </Grid>
+</Window>
