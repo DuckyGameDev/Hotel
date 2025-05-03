@@ -34,7 +34,8 @@ namespace Hotel.Windows
 
         private void ViewBookings_Click(object sender, RoutedEventArgs e)
         {
-
+            var bookingWindow = new BookingViewWindow(2);
+            bookingWindow.ShowDialog();
         }
 
         private void ViewProfile_Click(object sender, RoutedEventArgs e)

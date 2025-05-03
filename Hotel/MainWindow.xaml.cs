@@ -110,5 +110,12 @@ namespace Hotel
             profileViewWindow.Show();
             this.Close();
         }
+
+        private void ServiceButton_Click(object sender, RoutedEventArgs e)
+        {
+            var servicesWindow = new ServicesManagementWindow();
+            servicesWindow.Show();
+            this.Close();
+        }
     }
 }

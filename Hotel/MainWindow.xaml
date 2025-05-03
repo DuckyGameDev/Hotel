@@ -28,6 +28,13 @@
                            FontSize="16"
                            FontWeight="Bold"
                            Margin="20 0 0 0"/>
+                <Button Content="Услуги" 
+         Width="100" 
+         Background="Transparent" 
+         Foreground="White"
+         BorderThickness="0"
+         FontWeight="Bold"
+         Margin="10 0 0 0" Click="ServiceButton_Click"/>
             </StackPanel>
 
             <!-- Основное содержимое -->
