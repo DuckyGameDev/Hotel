@@ -1,0 +1,105 @@
+﻿<Window x:Class="Hotel.Windows.EditProfileWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Hotel.Windows"
+        mc:Ignorable="d"
+        Title="Редактирование профиля" 
+        Height="500" 
+        Width="600"
+        WindowStartupLocation="CenterScreen">
+    <Grid Background="#FFF0F5FF">
+        <Border Background="White" 
+                CornerRadius="5"
+                Margin="20"
+                Padding="20">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <!-- Заголовок -->
+                    <TextBlock Text="Редактирование профиля" 
+                               FontSize="18" 
+                               FontWeight="Bold"
+                               Margin="0 0 0 20"/>
+
+                    <!-- Основные данные -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- ФИО -->
+                        <TextBlock Text="ФИО:" 
+                                   Grid.Row="0" Grid.Column="0" 
+                                   Margin="0 0 10 10" 
+                                   VerticalAlignment="Center"/>
+                        <TextBox x:Name="FullNameTextBox" 
+                                 Grid.Row="0" Grid.Column="1" 
+                                 Margin="0 0 0 10"
+                                 Text="{Binding FullName, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <!-- Паспортные данные -->
+                        <TextBlock Text="Паспортные данные:" 
+                                   Grid.Row="1" Grid.Column="0" 
+                                   Margin="0 0 10 10" 
+                                   VerticalAlignment="Center"/>
+                        <TextBox x:Name="PassportTextBox" 
+                                 Grid.Row="1" Grid.Column="1" 
+                                 Margin="0 0 0 10"
+                                 Text="{Binding PassportData, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <!-- Телефон -->
+                        <TextBlock Text="Телефон:" 
+                                   Grid.Row="2" Grid.Column="0" 
+                                   Margin="0 0 10 10" 
+                                   VerticalAlignment="Center"/>
+                        <TextBox x:Name="PhoneTextBox" 
+                                 Grid.Row="2" Grid.Column="1" 
+                                 Margin="0 0 0 10"
+                                 Text="{Binding ContactPhone, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <!-- Email -->
+                        <TextBlock Text="Email:" 
+                                   Grid.Row="3" Grid.Column="0" 
+                                   Margin="0 0 10 10" 
+                                   VerticalAlignment="Center"/>
+                        <TextBox x:Name="EmailTextBox" 
+                                 Grid.Row="3" Grid.Column="1" 
+                                 Margin="0 0 0 20"
+                                 Text="{Binding ContactEmail, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <!-- Пароль -->
+                        <Button Content="Сменить пароль" 
+                                Grid.Row="4" Grid.Column="1"
+                                HorizontalAlignment="Left"
+                                Style="{StaticResource LinkButtonStyle}"
+                                Click="ChangePassword_Click"/>
+                    </Grid>
+
+                    <!-- Кнопки -->
+                    <StackPanel Orientation="Horizontal" 
+                                HorizontalAlignment="Right"
+                                Margin="0 20 0 0">
+                        <Button Content="Сохранить" 
+                                Width="120" 
+                                Margin="0 0 10 0"
+                                Click="SaveButton_Click"
+                                Background="#FF4A6FAE"
+                                Foreground="White"/>
+                        <Button Content="Отмена" 
+                                Width="120"
+                                Click="CancelButton_Click"/>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</Window>

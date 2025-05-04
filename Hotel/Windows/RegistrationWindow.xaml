@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Hotel.Windows"
         mc:Ignorable="d"
         Title="Регистрация" Height="550" Width="800">
-    <Grid Background="#FFF0F5FF">
+    <Grid Background="#FFF0F5FF" Margin="0,0,-150,-296">
         <Border Background="White" 
                 CornerRadius="5"
                 Width="320"

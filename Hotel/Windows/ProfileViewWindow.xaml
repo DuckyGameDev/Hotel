@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hotel.Windows"
         mc:Ignorable="d"
-        Title="ProfileViewWindow" Height="450" Width="800">
+        Title="ProfileViewWindow" Height="533" Width="857">
     <Grid Background="#FFF0F5FF">
         <!-- Шапка с заголовком -->
         <DockPanel>
@@ -44,7 +44,7 @@
                         </Border>
 
                         <!-- Меню -->
-                        <Button Content="Мои данные" 
+                        <Button Content="Редактировать данные" 
                                Style="{StaticResource MenuButtonStyle}"
                                Click="ViewProfile_Click"/>
                         <Button Content="Мои бронирования" 

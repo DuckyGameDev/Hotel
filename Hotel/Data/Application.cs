@@ -9,8 +9,24 @@ namespace Hotel.Data
 {
     public static class Application
     {
-        public static User? CurrentUser { get; private set; }
-        public static Guest? CurrentGuest => CurrentUser?.Guest;
+        private static User _currentUser;
+        private static Guest _currentGuest;
+
+        public static User CurrentUser
+        {
+            get => _currentUser;
+            set
+            {
+                _currentUser = value;
+                _currentGuest = value?.Guest;
+            }
+        }
+
+        public static Guest CurrentGuest
+        {
+            get => _currentGuest;
+            set => _currentGuest = value;
+        }
         public static Role? CurrentRole => CurrentUser?.Role;
 
         public static void SetCurrentUser(User user)

@@ -70,7 +70,12 @@ namespace Hotel.Windows
 
         private void ViewProfile_Click(object sender, RoutedEventArgs e)
         {
-            // Уже находимся в профиле
+            var editWindow = new EditProfileWindow();
+            if (editWindow.ShowDialog() == true)
+            {
+                // Обновляем данные на форме
+                LoadProfileData();
+            }
         }
 
         private void ViewSpa_Click(object sender, RoutedEventArgs e)
