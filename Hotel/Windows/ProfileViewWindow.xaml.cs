@@ -80,8 +80,7 @@ namespace Hotel.Windows
 
         private void ViewSpa_Click(object sender, RoutedEventArgs e)
         {
-            // Реализуйте по аналогии с другими окнами
-            MessageBox.Show("SPA-процедуры будут реализованы в следующей версии");
+           new SpaOrdersViewWindow().ShowDialog();
         }
 
         private void Logout_Click(object sender, RoutedEventArgs e)

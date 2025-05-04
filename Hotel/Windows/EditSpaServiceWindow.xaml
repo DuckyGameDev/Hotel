@@ -1,0 +1,87 @@
+﻿<Window x:Class="Hotel.Windows.EditSpaServiceWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="{Binding Title}" 
+        Height="450" 
+        Width="500"
+        WindowStartupLocation="CenterScreen">
+    <Grid Background="#FFF0F5FF">
+        <Border Background="White" 
+                CornerRadius="5"
+                Margin="20"
+                Padding="20">
+            <StackPanel>
+                <TextBlock Text="{Binding Title}" 
+                          FontSize="18" 
+                          FontWeight="Bold"
+                          Margin="0 0 0 20"/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Название -->
+                    <TextBlock Text="Название:" 
+                              Grid.Row="0" Grid.Column="0" 
+                              Margin="0 0 10 10"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" 
+                             Text="{Binding Service.ServiceName}"
+                             Margin="0 0 0 10"/>
+
+                    <!-- Описание -->
+                    <TextBlock Text="Описание:" 
+                              Grid.Row="1" Grid.Column="0" 
+                              Margin="0 0 10 10"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" 
+                             Text="{Binding Service.Description}"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             Height="80"
+                             VerticalScrollBarVisibility="Auto"
+                             Margin="0 0 0 10"/>
+
+                    <!-- Цена -->
+                    <TextBlock Text="Цена:" 
+                              Grid.Row="2" Grid.Column="0" 
+                              Margin="0 0 10 10"/>
+                    <TextBox Grid.Row="2" Grid.Column="1" 
+                             Text="{Binding Service.Price}"
+                             Margin="0 0 0 10"/>
+
+                    <!-- Длительность -->
+                    <TextBlock Text="Длительность (мин):" 
+                              Grid.Row="3" Grid.Column="0" 
+                              Margin="0 0 10 10"/>
+                    <TextBox Grid.Row="3" Grid.Column="1" 
+                             Text="{Binding Service.Duration}"
+                             Margin="0 0 0 20"/>
+                </Grid>
+
+                <!-- Кнопки -->
+                <StackPanel Orientation="Horizontal" 
+                            HorizontalAlignment="Right">
+                    <Button Content="Сохранить" 
+                            Width="120" 
+                            Margin="0 0 10 0"
+                            Click="SaveButton_Click"
+                            Background="#FF4A6FAE"
+                            Foreground="White"/>
+                    <Button Content="Отмена" 
+                            Width="120"
+                            Click="CancelButton_Click"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

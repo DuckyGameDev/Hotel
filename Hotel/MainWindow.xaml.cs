@@ -117,5 +117,12 @@ namespace Hotel
             servicesWindow.Show();
             this.Close();
         }
+
+        private void SpaServiceButton_Click(object sender, RoutedEventArgs e)
+        {
+            var spaserviceWindow = new SpaServicesManagementWindow();
+            spaserviceWindow.Show();
+            this.Close();
+        }
     }
 }
