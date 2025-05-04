@@ -1,58 +1,96 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+﻿using Hotel.Data;
 using Hotel.Models.Entities;
+using Microsoft.EntityFrameworkCore;
+using System.Windows;
+using Application = Hotel.Data.Application;
 
 namespace Hotel.Windows
 {
-    /// <summary>
-    /// Логика взаимодействия для ProfileViewWindow.xaml
-    /// </summary>
     public partial class ProfileViewWindow : Window
     {
+        private readonly ApplicationDbContext _context = new ApplicationDbContext();
+        private Guest _currentGuest;
+
         public ProfileViewWindow()
         {
             InitializeComponent();
+            LoadProfileData();
+        }
+
+        private void LoadProfileData()
+        {
+            if (Application.CurrentUser == null)
+            {
+                MessageBox.Show("Необходимо авторизоваться");
+                Close();
+                return;
+            }
+
+            try
+            {
+                // Загружаем данные гостя с связанными данными
+                _currentGuest = _context.Guests
+                    .Include(g => g.User)
+                    .Include(g => g.Bookings)
+                    .FirstOrDefault(g => g.User != null && g.User.UserId == Application.CurrentUser.UserId);
+
+                if (_currentGuest == null)
+                {
+                    MessageBox.Show("Профиль не найден");
+                    Close();
+                    return;
+                }
+
+                // Устанавливаем контекст данных
+                DataContext = new ProfileViewModel
+                {
+                    User = _currentGuest,
+                    BookingsCount = _currentGuest.Bookings.Count,
+                    UpcomingBookings = _currentGuest.Bookings
+                        .Count(b => b.CheckOutDate > DateOnly.FromDateTime(DateTime.Now))
+                };
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки профиля: {ex.Message}");
+                Close();
+            }
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            var mainWindow = new MainWindow();
-            mainWindow.Show();
-            this.Close();
+            new MainWindow().Show();
+            Close();
         }
 
         private void ViewBookings_Click(object sender, RoutedEventArgs e)
         {
-            var bookingWindow = new BookingViewWindow(2);
-            bookingWindow.ShowDialog();
+            new BookingViewWindow().ShowDialog();
         }
 
         private void ViewProfile_Click(object sender, RoutedEventArgs e)
         {
-
+            // Уже находимся в профиле
         }
 
         private void ViewSpa_Click(object sender, RoutedEventArgs e)
         {
-
+            // Реализуйте по аналогии с другими окнами
+            MessageBox.Show("SPA-процедуры будут реализованы в следующей версии");
         }
 
         private void Logout_Click(object sender, RoutedEventArgs e)
         {
-            AuthorizationWindow authorizationWindow = new AuthorizationWindow();
-            authorizationWindow.Show();
-            this.Close();
+            Application.Logout();
+            new AuthorizationWindow().Show();
+            Close();
         }
+    }
+
+    public class ProfileViewModel
+    {
+        public Guest User { get; set; }
+        public int BookingsCount { get; set; }
+        public int UpcomingBookings { get; set; }
     }
 }

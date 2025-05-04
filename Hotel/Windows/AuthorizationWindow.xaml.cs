@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Hotel.Data;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Application = Hotel.Data.Application;
 
 namespace Hotel.Windows
 {
@@ -19,14 +22,17 @@ namespace Hotel.Windows
     /// </summary>
     public partial class AuthorizationWindow : Window
     {
+        private readonly ApplicationDbContext _context;
+
         public AuthorizationWindow()
         {
             InitializeComponent();
+            _context = new ApplicationDbContext();
         }
 
-        private void LoginButton_Click(object sender, RoutedEventArgs e)
+        private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
-            string username = UsernameBox.Text;
+            string username = UsernameBox.Text.Trim();
             string password = PasswordBox.Password;
 
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
@@ -35,26 +41,37 @@ namespace Hotel.Windows
                 return;
             }
 
-            // Простая проверка (в реальном приложении замените на проверку в БД)
-            if (username == "admin" && password == "admin")
+            try
             {
-                //MessageBox.Show("Успешный вход!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
-                //// Открываем главное окно
-                var mainWindow = new MainWindow();
-                mainWindow.Show();
-                this.Close();
-            }
-            else
-            {
-                MessageBox.Show("Неверный логин или пароль", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+                var user = await _context.Users
+                    .Include(u => u.Role)
+                    .Include(u => u.Guest)
+                    .FirstOrDefaultAsync(u => u.Login == username);
 
+                if (user != null && Verification.VerifyPassword(password, user.Password))
+                {
+                    Application.SetCurrentUser(user);
+
+                    var mainWindow = new MainWindow();
+                    mainWindow.Show();
+                    this.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Неверный логин или пароль", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при авторизации: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Функция регистрации будет реализована позже", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
-
+            var registerWindow = new RegistrationWindow();
+            registerWindow.Show();
+            this.Close();
         }
     }
 }

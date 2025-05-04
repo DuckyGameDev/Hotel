@@ -37,10 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\Configurations\" />
-    <Folder Include="Data\Migrations\" />
     <Folder Include="Models\Entities\" />
-    <Folder Include="Models\Enums\" />
   </ItemGroup>
 
   <ItemGroup>

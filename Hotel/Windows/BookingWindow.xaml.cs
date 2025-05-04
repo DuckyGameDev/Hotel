@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
+using Application = Hotel.Data.Application;
 
 namespace Hotel.Windows
 {
@@ -30,6 +31,7 @@ namespace Hotel.Windows
         {
             Room = room;
             InitializeComponent();
+            LoadUserData(); // Загружаем данные пользователя
             LoadServices();
         }
 
@@ -50,8 +52,28 @@ namespace Hotel.Windows
                 CheckOutDate = booking.CheckOutDate.ToDateTime(TimeOnly.MinValue);
                 LoadServices();
             }
+            else
+            {
+                LoadUserData(); // Загружаем данные пользователя для нового бронирования
+            }
 
             DataContext = this;
+        }
+
+        private void LoadUserData()
+        {
+            if (Application.CurrentGuest != null)
+            {
+                GuestFullName = Application.CurrentGuest.FullName;
+                GuestPassport = Application.CurrentGuest.PassportData;
+                GuestPhone = Application.CurrentGuest.ContactPhone;
+                GuestEmail = Application.CurrentGuest.ContactEmail ?? string.Empty;
+
+                // Делаем поля только для чтения, если пользователь авторизован
+                FullNameTextBox.IsReadOnly = true;
+                PassportTextBox.IsReadOnly = true;
+                PhoneTextBox.IsReadOnly = true;
+            }
         }
 
         private void LoadServices()
@@ -59,7 +81,6 @@ namespace Hotel.Windows
             _context.Services.Load();
             var services = _context.Services.Local.ToList();
 
-            // Получаем список уже выбранных услуг (для режима редактирования)
             var selectedServiceIds = new HashSet<int>();
             if (IsEditMode && CurrentBooking != null)
             {
@@ -88,6 +109,74 @@ namespace Hotel.Windows
             ServicesDataGrid.ItemsSource = AvailableServices;
         }
 
+        private void ConfirmBooking_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(GuestFullName) ||
+                string.IsNullOrWhiteSpace(GuestPassport) ||
+                string.IsNullOrWhiteSpace(GuestPhone))
+            {
+                MessageBox.Show("Заполните все обязательные поля!");
+                return;
+            }
+
+            try
+            {
+                if (IsEditMode && CurrentBooking != null)
+                {
+                    // Редактирование существующего бронирования
+                    CurrentBooking.CheckInDate = DateOnly.FromDateTime(CheckInDate);
+                    CurrentBooking.CheckOutDate = DateOnly.FromDateTime(CheckOutDate);
+                    UpdateSelectedServices(CurrentBooking);
+                }
+                else
+                {
+                    // Создание нового бронирования
+                    Guest guest;
+
+                    if (Application.CurrentGuest != null)
+                    {
+                        // Используем существующего гостя (текущего пользователя)
+                        guest = _context.Guests.Find(Application.CurrentGuest.GuestId);
+                    }
+                    else
+                    {
+                        // Создаем нового гостя (для неавторизованных пользователей)
+                        guest = new Guest
+                        {
+                            FullName = GuestFullName,
+                            PassportData = GuestPassport,
+                            ContactPhone = GuestPhone,
+                            ContactEmail = string.IsNullOrWhiteSpace(GuestEmail) ? null : GuestEmail
+                        };
+                        _context.Guests.Add(guest);
+                    }
+
+                    var booking = new Booking
+                    {
+                        Guest = guest,
+                        RoomId = Room.RoomId,
+                        CheckInDate = DateOnly.FromDateTime(CheckInDate),
+                        CheckOutDate = DateOnly.FromDateTime(CheckOutDate)
+                    };
+
+                    AddSelectedServices(booking);
+                    Room.Status = "занят";
+                    _context.Bookings.Add(booking);
+                    _context.Rooms.Update(Room);
+                }
+
+                _context.SaveChanges();
+                MessageBox.Show("Бронирование успешно оформлено!");
+                DialogResult = true;
+                Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при бронировании: {ex.Message}");
+            }
+        }
+
+        // Остальные методы остаются без изменений...
         private Dictionary<TimeOnly, string> GetAvailableTimes()
         {
             return new Dictionary<TimeOnly, string>
@@ -112,76 +201,8 @@ namespace Hotel.Windows
             return total;
         }
 
-        private void ConfirmBooking_Click(object sender, RoutedEventArgs e)
-        {
-            // Валидация данных
-            if (string.IsNullOrWhiteSpace(GuestFullName) ||
-                string.IsNullOrWhiteSpace(GuestPassport) ||
-                string.IsNullOrWhiteSpace(GuestPhone))
-            {
-                MessageBox.Show("Заполните все обязательные поля!");
-                return;
-            }
-
-            try
-            {
-                if (IsEditMode && CurrentBooking != null)
-                {
-                    // Редактирование существующего бронирования
-                    CurrentBooking.Guest.FullName = GuestFullName;
-                    CurrentBooking.Guest.PassportData = GuestPassport;
-                    CurrentBooking.Guest.ContactPhone = GuestPhone;
-                    CurrentBooking.Guest.ContactEmail = string.IsNullOrWhiteSpace(GuestEmail) ? null : GuestEmail;
-                    CurrentBooking.CheckInDate = DateOnly.FromDateTime(CheckInDate);
-                    CurrentBooking.CheckOutDate = DateOnly.FromDateTime(CheckOutDate);
-
-                    // Обновляем услуги
-                    UpdateSelectedServices(CurrentBooking);
-                }
-                else
-                {
-                    // Создание нового бронирования
-                    var guest = new Guest
-                    {
-                        FullName = GuestFullName,
-                        PassportData = GuestPassport,
-                        ContactPhone = GuestPhone,
-                        ContactEmail = string.IsNullOrWhiteSpace(GuestEmail) ? null : GuestEmail
-                    };
-
-                    var booking = new Booking
-                    {
-                        Guest = guest,
-                        RoomId = Room.RoomId,
-                        CheckInDate = DateOnly.FromDateTime(CheckInDate),
-                        CheckOutDate = DateOnly.FromDateTime(CheckOutDate)
-                    };
-
-                    // Добавляем выбранные услуги
-                    AddSelectedServices(booking);
-
-                    // Обновляем статус номера
-                    Room.Status = "занят";
-
-                    _context.Guests.Add(guest);
-                    _context.Bookings.Add(booking);
-                    _context.Rooms.Update(Room);
-                }
-
-                _context.SaveChanges();
-                MessageBox.Show("Изменения сохранены!");
-                DialogResult = true;
-                Close();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка: {ex.Message}");
-            }
-        }
-
         private void UpdateSelectedServices(Booking booking)
         {
-            // Удаляем услуги, которые были сняты
             var servicesToRemove = booking.Serviceorders
                 .Where(so => !AvailableServices.Any(s => s.IsSelected && s.Service.ServiceId == so.ServiceId))
                 .ToList();
@@ -191,7 +212,6 @@ namespace Hotel.Windows
                 booking.Serviceorders.Remove(service);
             }
 
-            // Добавляем или обновляем выбранные услуги
             foreach (var selectedService in AvailableServices.Where(s => s.IsSelected))
             {
                 var existingOrder = booking.Serviceorders
@@ -199,13 +219,11 @@ namespace Hotel.Windows
 
                 if (existingOrder != null)
                 {
-                    // Обновляем существующую услугу
                     existingOrder.ServiceDate = DateOnly.FromDateTime(selectedService.ServiceDate);
                     existingOrder.ServiceTime = selectedService.ServiceTime;
                 }
                 else
                 {
-                    // Добавляем новую услугу
                     booking.Serviceorders.Add(new Serviceorder
                     {
                         ServiceId = selectedService.Service.ServiceId,
