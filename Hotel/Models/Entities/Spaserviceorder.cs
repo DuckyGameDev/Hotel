@@ -7,15 +7,15 @@ public partial class Spaserviceorder
 {
     public int SpaOrderId { get; set; }
 
-    public int BookingId { get; set; }
-
     public int SpaServiceId { get; set; }
 
     public DateOnly ServiceDate { get; set; }
 
     public TimeOnly ServiceTime { get; set; }
 
-    public virtual Booking Booking { get; set; } = null!;
+    public int UserId { get; set; }
 
     public virtual Spaservice SpaService { get; set; } = null!;
+
+    public virtual User User { get; set; } = null!;
 }

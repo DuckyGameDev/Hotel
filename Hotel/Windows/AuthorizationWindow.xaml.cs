@@ -38,8 +38,8 @@ namespace Hotel.Windows
             // Простая проверка (в реальном приложении замените на проверку в БД)
             if (username == "admin" && password == "admin")
             {
-                MessageBox.Show("Успешный вход!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
-                // Открываем главное окно
+                //MessageBox.Show("Успешный вход!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                //// Открываем главное окно
                 var mainWindow = new MainWindow();
                 mainWindow.Show();
                 this.Close();

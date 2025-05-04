@@ -30,6 +30,8 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<Review> Reviews { get; set; }
 
+    public virtual DbSet<Role> Roles { get; set; }
+
     public virtual DbSet<Room> Rooms { get; set; }
 
     public virtual DbSet<Roomcategory> Roomcategories { get; set; }
@@ -212,6 +214,21 @@ public partial class ApplicationDbContext : DbContext
                 .HasConstraintName("fk_review_booking");
         });
 
+        modelBuilder.Entity<Role>(entity =>
+        {
+            entity.HasKey(e => e.RoleId).HasName("roles_pkey");
+
+            entity.ToTable("roles");
+
+            entity.HasIndex(e => e.RoleName, "roles_role_name_key").IsUnique();
+
+            entity.Property(e => e.RoleId).HasColumnName("role_id");
+            entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.RoleName)
+                .HasMaxLength(50)
+                .HasColumnName("role_name");
+        });
+
         modelBuilder.Entity<Room>(entity =>
         {
             entity.HasKey(e => e.RoomId).HasName("room_pkey");
@@ -317,22 +334,22 @@ public partial class ApplicationDbContext : DbContext
 
             entity.ToTable("spaserviceorder");
 
-            entity.HasIndex(e => new { e.BookingId, e.SpaServiceId, e.ServiceDate, e.ServiceTime }, "uniq_spa_service_booking").IsUnique();
+            entity.HasIndex(e => new { e.UserId, e.SpaServiceId, e.ServiceDate, e.ServiceTime }, "uniq_spa_service_user").IsUnique();
 
             entity.Property(e => e.SpaOrderId).HasColumnName("spa_order_id");
-            entity.Property(e => e.BookingId).HasColumnName("booking_id");
             entity.Property(e => e.ServiceDate).HasColumnName("service_date");
             entity.Property(e => e.ServiceTime).HasColumnName("service_time");
             entity.Property(e => e.SpaServiceId).HasColumnName("spa_service_id");
-
-            entity.HasOne(d => d.Booking).WithMany(p => p.Spaserviceorders)
-                .HasForeignKey(d => d.BookingId)
-                .HasConstraintName("fk_spaserviceorder_booking");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
 
             entity.HasOne(d => d.SpaService).WithMany(p => p.Spaserviceorders)
                 .HasForeignKey(d => d.SpaServiceId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("fk_spaserviceorder_service");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Spaserviceorders)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("fk_spaserviceorder_user");
         });
 
         modelBuilder.Entity<User>(entity =>
@@ -353,10 +370,16 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.Password)
                 .HasMaxLength(255)
                 .HasColumnName("password");
+            entity.Property(e => e.RoleId).HasColumnName("role_id");
 
             entity.HasOne(d => d.Guest).WithOne(p => p.User)
                 .HasForeignKey<User>(d => d.GuestId)
                 .HasConstraintName("fk_user_guest");
+
+            entity.HasOne(d => d.Role).WithMany(p => p.Users)
+                .HasForeignKey(d => d.RoleId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("fk_user_role");
         });
 
         modelBuilder.Entity<Workschedule>(entity =>

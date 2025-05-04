@@ -26,6 +26,4 @@ public partial class Booking
     public virtual Room Room { get; set; } = null!;
 
     public virtual ICollection<Serviceorder> Serviceorders { get; set; } = new List<Serviceorder>();
-
-    public virtual ICollection<Spaserviceorder> Spaserviceorders { get; set; } = new List<Spaserviceorder>();
 }

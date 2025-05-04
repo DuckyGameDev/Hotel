@@ -48,10 +48,10 @@ namespace Hotel.Windows
                 GuestEmail = booking.Guest.ContactEmail;
                 CheckInDate = booking.CheckInDate.ToDateTime(TimeOnly.MinValue);
                 CheckOutDate = booking.CheckOutDate.ToDateTime(TimeOnly.MinValue);
+                LoadServices();
             }
 
             DataContext = this;
-            LoadServices();
         }
 
         private void LoadServices()
