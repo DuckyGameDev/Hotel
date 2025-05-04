@@ -9,9 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\ViewModels\**" />
     <Compile Remove="Views\**" />
+    <EmbeddedResource Remove="Models\ViewModels\**" />
     <EmbeddedResource Remove="Views\**" />
+    <None Remove="Models\ViewModels\**" />
     <None Remove="Views\**" />
+    <Page Remove="Models\ViewModels\**" />
     <Page Remove="Views\**" />
   </ItemGroup>
 
@@ -37,9 +41,6 @@
     <Folder Include="Data\Migrations\" />
     <Folder Include="Models\Entities\" />
     <Folder Include="Models\Enums\" />
-    <Folder Include="Models\ViewModels\" />
-    <Folder Include="Services\Interfaces\" />
-    <Folder Include="Services\Implementations\" />
   </ItemGroup>
 
   <ItemGroup>

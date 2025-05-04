@@ -5,51 +5,114 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hotel.Windows"
         mc:Ignorable="d"
-        Title="BookingWindow" Height="450" Width="800">
+        Title="Оформление бронирования" 
+        Height="600" 
+        Width="800"
+        WindowStartupLocation="CenterScreen">
     <Grid>
-        <StackPanel Margin="15">
-        <!-- Информация о номере -->
-        <GroupBox Header="Информация о номере">
-            <StackPanel>
-                <TextBlock Text="{Binding RoomNumber, StringFormat='Номер: {0}'}" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Category.CategoryName, StringFormat='Категория: {0}'}"/>
-                <TextBlock Text="{Binding Category.PricePerNight, StringFormat='Цена за ночь: {0:C}'}"/>
-            </StackPanel>
-        </GroupBox>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="15">
+                <!-- Информация о номере -->
+                <GroupBox Header="Информация о номере">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Room.RoomNumber, StringFormat='Номер: {0}'}" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding Room.Category.CategoryName, StringFormat='Категория: {0}'}"/>
+                        <TextBlock Text="{Binding Room.Category.PricePerNight, StringFormat='Цена за ночь: {0:C}'}"/>
+                    </StackPanel>
+                </GroupBox>
 
-        <!-- Данные гостя -->
-        <GroupBox Header="Данные гостя">
-            <StackPanel>
-                <TextBlock Text="ФИО:"/>
-                <TextBox x:Name="FullNameTextBox" Text="{Binding GuestFullName}"/>
-                
-                <TextBlock Text="Паспортные данные:"/>
-                <TextBox x:Name="PassportTextBox" Text="{Binding GuestPassport}"/>
-                
-                <TextBlock Text="Контактный телефон:"/>
-                <TextBox x:Name="PhoneTextBox" Text="{Binding GuestPhone}"/>
-                
-                <TextBlock Text="Email (необязательно):"/>
-                <TextBox x:Name="EmailTextBox" Text="{Binding GuestEmail}"/>
-            </StackPanel>
-        </GroupBox>
+                <!-- Данные гостя -->
+                <GroupBox Header="Данные гостя">
+                    <StackPanel>
+                        <TextBlock Text="ФИО:"/>
+                        <TextBox x:Name="FullNameTextBox" Text="{Binding GuestFullName}"/>
 
-        <!-- Даты бронирования -->
-        <GroupBox Header="Даты бронирования">
-            <StackPanel >
-                <TextBlock Text="Дата заезда:"/>
-                <DatePicker x:Name="CheckInDatePicker" SelectedDate="{Binding CheckInDate}"/>
-                
-                <TextBlock Text="Дата выезда:"/>
-                <DatePicker x:Name="CheckOutDatePicker" SelectedDate="{Binding CheckOutDate}"/>
-            </StackPanel>
-        </GroupBox>
+                        <TextBlock Text="Паспортные данные:"/>
+                        <TextBox x:Name="PassportTextBox" Text="{Binding GuestPassport}"/>
 
-        <!-- Кнопки -->
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 15 0 0">
-            <Button Content="Подтвердить" Width="120" Margin="0 0 10 0" Click="ConfirmBooking_Click"/>
-            <Button Content="Отмена" Width="120" Click="Cancel_Click"/>
-        </StackPanel>
-    </StackPanel>
+                        <TextBlock Text="Контактный телефон:"/>
+                        <TextBox x:Name="PhoneTextBox" Text="{Binding GuestPhone}"/>
+
+                        <TextBlock Text="Email (необязательно):"/>
+                        <TextBox x:Name="EmailTextBox" Text="{Binding GuestEmail}"/>
+                    </StackPanel>
+                </GroupBox>
+
+                <!-- Даты бронирования -->
+                <GroupBox Header="Даты бронирования">
+                    <StackPanel>
+                        <TextBlock Text="Дата заезда:"/>
+                        <DatePicker x:Name="CheckInDatePicker" SelectedDate="{Binding CheckInDate}"/>
+
+                        <TextBlock Text="Дата выезда:"/>
+                        <DatePicker x:Name="CheckOutDatePicker" SelectedDate="{Binding CheckOutDate}"/>
+                    </StackPanel>
+                </GroupBox>
+
+                <!-- Дополнительные услуги -->
+                <GroupBox Header="Дополнительные услуги">
+                    <StackPanel>
+                        <DataGrid x:Name="ServicesDataGrid" 
+                                 AutoGenerateColumns="False"
+                                 CanUserAddRows="False"
+                                 CanUserDeleteRows="False"
+                                 IsReadOnly="True"
+                                 SelectionMode="Single"
+                                 Margin="0 10 0 0">
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Width="Auto">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                     VerticalAlignment="Center"
+                                                     HorizontalAlignment="Center"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="Услуга" Binding="{Binding Service.ServiceName}" Width="*"/>
+                                <DataGridTextColumn Header="Тип" Binding="{Binding Service.ServiceType}" Width="120"/>
+                                <DataGridTextColumn Header="Цена" Binding="{Binding Service.Price, StringFormat='{}{0:C}'}" Width="100"/>
+                                <DataGridTemplateColumn Header="Дата" Width="150">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <DatePicker SelectedDate="{Binding ServiceDate, UpdateSourceTrigger=PropertyChanged}"
+                                                        IsEnabled="{Binding IsSelected}"
+                                                        Width="120"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Время" Width="150">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ComboBox SelectedValue="{Binding ServiceTime, UpdateSourceTrigger=PropertyChanged}"
+                                                     IsEnabled="{Binding IsSelected}"
+                                                     ItemsSource="{Binding AvailableTimes}"
+                                                     DisplayMemberPath="Value"
+                                                     SelectedValuePath="Key"
+                                                     Width="100"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </GroupBox>
+
+                <!-- Итоговая стоимость -->
+                <Border Background="#FFE3F2FD" CornerRadius="5" Padding="10" Margin="0 10">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <TextBlock Text="Итого к оплате:" FontWeight="Bold" Margin="0 0 10 0"/>
+                        <TextBlock Text="{Binding TotalPrice, StringFormat='{}{0:C}'}" 
+                                   FontWeight="Bold" FontSize="16" Foreground="#FF4A6FAE"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Кнопки -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 15 0 0">
+                    <Button Content="Подтвердить" Width="120" Margin="0 0 10 0" Click="ConfirmBooking_Click"/>
+                    <Button Content="Отмена" Width="120" Click="Cancel_Click"/>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Window>

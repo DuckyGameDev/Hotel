@@ -2,24 +2,11 @@
 using Hotel.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Hotel.Windows
 {
-    /// <summary>
-    /// Логика взаимодействия для BookingViewWindow.xaml
-    /// </summary>
     public partial class BookingViewWindow : Window
     {
         private readonly ApplicationDbContext _context = new ApplicationDbContext();
@@ -38,6 +25,8 @@ namespace Hotel.Windows
                 .Include(b => b.Room)
                 .Include(b => b.Room.Category)
                 .Include(b => b.Guest)
+                .Include(b => b.Serviceorders)
+                    .ThenInclude(so => so.Service)
                 .Where(b => b.GuestId == _currentGuestId)
                 .Load();
 
@@ -72,21 +61,42 @@ namespace Hotel.Windows
         {
             if (BookingsListView.SelectedItem is Booking selectedBooking)
             {
-                // var detailsWindow = new BookingDetailsWindow(selectedBooking);
-                //detailsWindow.ShowDialog();
+                // Загружаем полные данные бронирования
+                var fullBooking = _context.Bookings
+                    .Include(b => b.Room)
+                    .Include(b => b.Room.Category)
+                    .Include(b => b.Guest)
+                    .Include(b => b.Serviceorders)
+                        .ThenInclude(so => so.Service)
+                    .FirstOrDefault(b => b.BookingId == selectedBooking.BookingId);
+
+                if (fullBooking != null)
+                {
+                    var bookingWindow = new BookingWindow(fullBooking, true);
+                    if (bookingWindow.ShowDialog() == true)
+                    {
+                        // Обновляем данные после редактирования
+                        _context.SaveChanges();
+                        LoadBookings();
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Выберите бронирование для просмотра деталей");
             }
         }
 
         private void AddReviewButton_Click(object sender, RoutedEventArgs e)
         {
-            if (BookingsListView.SelectedItem is Booking selectedBooking)
-            {
-                //var reviewWindow = new AddReviewWindow(selectedBooking);
-                //if (reviewWindow.ShowDialog() == true)
-                //{
-                //    LoadBookings();
-                //}
-            }
+            //if (BookingsListView.SelectedItem is Booking selectedBooking)
+            //{
+            //    var reviewWindow = new AddReviewWindow(selectedBooking);
+            //    if (reviewWindow.ShowDialog() == true)
+            //    {
+            //        LoadBookings();
+            //    }
+            //}
         }
     }
 }
