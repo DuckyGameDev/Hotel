@@ -35,7 +35,9 @@ namespace Hotel.Windows
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            Close();
+            var mainWindow = new MainWindow();
+            mainWindow.Show();
+            this.Close();
         }
 
         private void AddSpaService_Click(object sender, RoutedEventArgs e)

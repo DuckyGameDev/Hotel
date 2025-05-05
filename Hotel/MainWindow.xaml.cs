@@ -4,6 +4,7 @@ using Hotel.Windows;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,19 +25,27 @@ namespace Hotel
     public partial class MainWindow : Window
     {
         private readonly ApplicationDbContext _context = new ApplicationDbContext();
+        private ObservableCollection<Room> _roomsCollection;
         public MainWindow()
         {
             InitializeComponent();
+            _roomsCollection = new ObservableCollection<Room>();
+            RoomsListView.ItemsSource = _roomsCollection;
             LoadRooms();
         }
 
         private void LoadRooms()
         {
             _context.Rooms
-                .Include(r => r.Category)
-                .Load();
+           .Include(r => r.Category)
+           .Load();
 
-            RoomsListView.ItemsSource = _context.Rooms.Local.ToObservableCollection();
+            // Очищаем и обновляем существующую коллекцию вместо создания новой
+            _roomsCollection.Clear();
+            foreach (var room in _context.Rooms.Local)
+            {
+                _roomsCollection.Add(room);
+            }
         }
 
         private void AddRoom_Click(object sender, RoutedEventArgs e)
