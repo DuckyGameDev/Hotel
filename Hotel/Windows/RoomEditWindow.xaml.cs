@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace Hotel.Windows
 {
@@ -55,7 +56,7 @@ namespace Hotel.Windows
             // Обновляем значения из полей ввода
             CurrentRoom.RoomNumber = RoomNumberTextBox.Text;
             CurrentRoom.CategoryId = (int)CategoryComboBox.SelectedValue;
-            CurrentRoom.Status = StatusComboBox.SelectedValue?.ToString();
+            CurrentRoom.Status = (StatusComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString();
 
             // Очищаем и проверяем ввод
             CurrentRoom.RoomNumber = RoomNumberTextBox.Text.Trim();
@@ -76,6 +77,7 @@ namespace Hotel.Windows
 
             try
             {
+                        Debug.WriteLine(CurrentRoom.Status);
                 if (CurrentRoom.RoomId == 0) // Новый номер
                 {
                     _context.Rooms.Add(CurrentRoom);
@@ -88,6 +90,7 @@ namespace Hotel.Windows
                         existingRoom.RoomNumber = CurrentRoom.RoomNumber;
                         existingRoom.CategoryId = CurrentRoom.CategoryId;
                         existingRoom.Status = CurrentRoom.Status;
+
                     }
                 }
 

@@ -68,6 +68,7 @@ namespace Hotel
                 var editForm = new RoomEditWindow(selectedRoom);
                 if (editForm.ShowDialog() == true)
                 {
+                    _context.SaveChanges();
                     LoadRooms();
                 }
             }
@@ -131,6 +132,13 @@ namespace Hotel
         {
             var spaserviceWindow = new SpaServicesManagementWindow();
             spaserviceWindow.Show();
+            this.Close();
+        }
+
+        private void SpaServiceOrderButton_Click(object sender, RoutedEventArgs e)
+        {
+            SpaOrderWindow orderWindow = new SpaOrderWindow();
+            orderWindow.Show();
             this.Close();
         }
     }
