@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Application = Hotel.Data.Application;
 
 namespace Hotel
 {
@@ -32,6 +34,14 @@ namespace Hotel
             _roomsCollection = new ObservableCollection<Room>();
             RoomsListView.ItemsSource = _roomsCollection;
             LoadRooms();
+            if(Application.IsGuest)
+            {
+                ServiceBtn.Visibility = Visibility.Hidden;
+                SpaServiseBtn.Visibility = Visibility.Hidden;
+                AddRoomBtn.Visibility = Visibility.Hidden;
+                EditRoomBtn.Visibility = Visibility.Hidden;
+                DeleteRoomBtn.Visibility = Visibility.Hidden;
+            }
         }
 
         private void LoadRooms()

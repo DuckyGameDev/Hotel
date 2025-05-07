@@ -28,6 +28,14 @@ namespace Hotel.Windows
         {
             InitializeComponent();
             _context = new ApplicationDbContext();
+            this.PreviewKeyDown += (s, e) =>
+            {
+                if (e.Key == Key.Enter)
+                {
+                    LoginButton_Click(null, null);
+                    e.Handled = true;
+                }
+            };
         }
 
         private async void LoginButton_Click(object sender, RoutedEventArgs e)

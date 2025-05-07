@@ -36,7 +36,8 @@
                              Margin="0 5 0 20"/>
 
                 <!-- Кнопки -->
-                <Button Content="Войти" 
+                <Button  IsDefault="True"
+                    Content="Войти" 
                         Click="LoginButton_Click"
                         Background="#FF4A6FAE"
                         Foreground="White"
