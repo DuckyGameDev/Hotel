@@ -151,5 +151,12 @@ namespace Hotel
             orderWindow.Show();
             this.Close();
         }
+
+        private void EmployeeView_Click(object sender, RoutedEventArgs e)
+        {
+            var employeesWindow = new EmployeeManagementWindow();
+            employeesWindow.Show();
+            this.Close();
+        }
     }
 }
