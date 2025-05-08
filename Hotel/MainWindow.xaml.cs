@@ -27,14 +27,24 @@ namespace Hotel
     public partial class MainWindow : Window
     {
         private readonly ApplicationDbContext _context = new ApplicationDbContext();
-        private ObservableCollection<Room> _roomsCollection;
+        private ObservableCollection<Room> _filteredRooms = new ObservableCollection<Room>();
+        //private ObservableCollection<Room> _roomsCollection;
         public MainWindow()
         {
             InitializeComponent();
-            _roomsCollection = new ObservableCollection<Room>();
-            RoomsListView.ItemsSource = _roomsCollection;
+            //_roomsCollection = new ObservableCollection<Room>();
+            //RoomsListView.ItemsSource = _roomsCollection;
+            LoadCategories();
             LoadRooms();
-            if(Application.IsGuest)
+            CheckInDatePicker.SelectedDateChanged += (sender, e) =>
+            {
+                if (CheckInDatePicker.SelectedDate.HasValue)
+                {
+                    var newCheckIn = CheckInDatePicker.SelectedDate.Value;
+                    CheckOutDatePicker.SelectedDate = newCheckIn.AddDays(1);
+                }
+            };
+            if (Application.IsGuest)
             {
                 ServiceBtn.Visibility = Visibility.Hidden;
                 SpaServiseBtn.Visibility = Visibility.Hidden;
@@ -44,19 +54,96 @@ namespace Hotel
             }
         }
 
+        private void LoadCategories()
+        {
+            _context.Roomcategories.Load();
+            CategoryComboBox.ItemsSource = _context.Roomcategories.Local.ToObservableCollection();
+            CategoryComboBox.SelectedIndex = 0;
+        }
+
         private void LoadRooms()
         {
             _context.Rooms
-           .Include(r => r.Category)
-           .Load();
+             .Include(r => r.Category)
+             .Include(r => r.Bookings)
+             .Load();
 
-            // Очищаем и обновляем существующую коллекцию вместо создания новой
-            _roomsCollection.Clear();
+
+
+            //// Очищаем и обновляем существующую коллекцию вместо создания новой
+            //_roomsCollection.Clear();
+            //foreach (var room in _context.Rooms.Local)
+            //{
+            //    _roomsCollection.Add(room);
+            //}
+
+            ApplyFilters();
+        }
+
+
+        private void ApplyFilters_Click(object sender, RoutedEventArgs e)
+        {
+            ApplyFilters();
+        }
+
+
+        private void ApplyFilters()
+        {
+            var checkIn = CheckInDatePicker.SelectedDate ?? DateTime.Today;
+            var checkOut = CheckOutDatePicker.SelectedDate ?? checkIn.AddDays(1);
+
+            // Проверка, что выезд минимум на 1 день позже заезда
+            if (checkOut.Date <= checkIn.Date)
+            {
+                Debug.WriteLine(checkIn);
+                Debug.WriteLine(checkOut);
+                MessageBox.Show("Дата выезда должна быть позже даты заезда");
+                return;
+            }
+
+            decimal? maxPrice = null;
+            if (decimal.TryParse(MaxPriceTextBox.Text, out decimal price))
+            {
+                maxPrice = price;
+            }
+
+            var selectedCategory = CategoryComboBox.SelectedItem as Roomcategory;
+
+            _filteredRooms.Clear();
+
             foreach (var room in _context.Rooms.Local)
             {
-                _roomsCollection.Add(room);
+                // Фильтрация по категории
+                if (selectedCategory != null && room.CategoryId != selectedCategory.CategoryId)
+                    continue;
+
+                // Фильтрация по цене
+                if (maxPrice.HasValue && room.Category.PricePerNight > maxPrice.Value)
+                    continue;
+
+                // Фильтрация по датам
+                bool isAvailable = true;
+                foreach (var booking in room.Bookings)
+                {
+                    var bookingCheckIn = booking.CheckInDate.ToDateTime(TimeOnly.MinValue);
+                    var bookingCheckOut = booking.CheckOutDate.ToDateTime(TimeOnly.MinValue);
+
+                    if (!(checkIn >= bookingCheckOut || checkOut <= bookingCheckIn))
+                    {
+                        isAvailable = false;
+                        break;
+                    }
+                }
+
+                if (isAvailable)
+                {
+                    _filteredRooms.Add(room);
+                }
             }
+
+            RoomsListView.ItemsSource = _filteredRooms;
         }
+
 
         private void AddRoom_Click(object sender, RoutedEventArgs e)
         {
@@ -110,18 +197,34 @@ namespace Hotel
         {
             if (RoomsListView.SelectedItem is Room selectedRoom)
             {
-                var bookingForm = new BookingWindow(selectedRoom);
+                var checkIn = CheckInDatePicker.SelectedDate ?? DateTime.Today;
+                var checkOut = CheckOutDatePicker.SelectedDate ?? DateTime.Today.AddDays(1);
+
+                var bookingForm = new BookingWindow(
+                    selectedRoom,
+                    DateOnly.FromDateTime(checkIn),
+                    DateOnly.FromDateTime(checkOut));
+
                 if (bookingForm.ShowDialog() == true)
                 {
-                    // Обновляем список номеров после бронирования
-                    LoadRooms();
+                    ApplyFilters();
                 }
             }
-            else
-            {
-                MessageBox.Show("Выберите номер для бронирования", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
+
+            //if (RoomsListView.SelectedItem is Room selectedRoom)
+            //{
+            //    var bookingForm = new BookingWindow(selectedRoom);
+            //    if (bookingForm.ShowDialog() == true)
+            //    {
+            //        // Обновляем список номеров после бронирования
+            //        LoadRooms();
+            //    }
+            //}
+            //else
+            //{
+            //    MessageBox.Show("Выберите номер для бронирования", "Ошибка",
+            //        MessageBoxButton.OK, MessageBoxImage.Warning);
+            //}
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

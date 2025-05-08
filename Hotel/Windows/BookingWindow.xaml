@@ -8,7 +8,13 @@
         Title="Оформление бронирования" 
         Height="600" 
         Width="800"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        FontFamily="Arial"
+        Background="#FFF0F5FF">
+    
+    
+    
+    
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="15">

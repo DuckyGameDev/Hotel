@@ -51,7 +51,7 @@ namespace Hotel.Windows
         private void SetFormState(bool isEditing)
         {
             AddButton.IsEnabled = !isEditing;
-            //SaveButton.IsEnabled = isEditing;
+            SaveButton.IsEnabled = isEditing;
             CancelButton.IsEnabled = isEditing;
             EmployeesDataGrid.IsEnabled = !isEditing;
 
@@ -137,6 +137,7 @@ namespace Hotel.Windows
             {
                 _currentEmployee = selectedEmployee;
                 FillFormFromEmployee();
+                SetFormState(true);
             }
         }
 
