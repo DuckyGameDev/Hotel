@@ -1,0 +1,107 @@
+﻿<Window x:Class="Hotel.Windows.GuestManagementWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Hotel.Windows"
+        mc:Ignorable="d"
+        Title="Управление гостями" 
+        Height="650" Width="900"
+        WindowStartupLocation="CenterScreen">
+    <Grid Background="#FFF0F5FF">
+        <DockPanel>
+            <!-- Шапка -->
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" 
+                       Background="#FF4A6FAE" Height="50">
+                <Button Content="Назад" 
+                        Width="100" 
+                        Background="Transparent" 
+                        Foreground="White"
+                        BorderThickness="0"
+                        FontWeight="Bold"
+                        Margin="10 0 0 0"
+                        Click="BackButton_Click"/>
+                <TextBlock Text="Управление гостями" 
+                          Foreground="White"
+                          VerticalAlignment="Center"
+                          FontSize="16"
+                          FontWeight="Bold"
+                          Margin="20 0 0 0"/>
+            </StackPanel>
+
+            <!-- Основное содержимое -->
+            <Grid DockPanel.Dock="Top">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Верхняя часть - информация о госте -->
+                <GroupBox Grid.Row="0" Header="Информация о госте" Margin="10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="ФИО:" Grid.Row="0" Grid.Column="0" Margin="5"/>
+                        <TextBox x:Name="FullNameTextBox" Grid.Row="0" Grid.Column="1" Margin="5"/>
+
+                        <TextBlock Text="Паспортные данные:" Grid.Row="0" Grid.Column="2" Margin="5"/>
+                        <TextBox x:Name="PassportTextBox" Grid.Row="0" Grid.Column="3" Margin="5"/>
+
+                        <TextBlock Text="Телефон:" Grid.Row="1" Grid.Column="0" Margin="5"/>
+                        <TextBox x:Name="PhoneTextBox" Grid.Row="1" Grid.Column="1" Margin="5"/>
+
+                        <TextBlock Text="Email:" Grid.Row="1" Grid.Column="2" Margin="5"/>
+                        <TextBox x:Name="EmailTextBox" Grid.Row="1" Grid.Column="3" Margin="5"/>
+
+                        <TextBlock Text="Логин:" Grid.Row="2" Grid.Column="0" Margin="5"/>
+                        <TextBox x:Name="LoginTextBox" Grid.Row="2" Grid.Column="1" Margin="5"/>
+
+                        <TextBlock Text="Пароль:" Grid.Row="2" Grid.Column="2" Margin="5"/>
+                        <PasswordBox x:Name="PasswordBox" Grid.Row="2" Grid.Column="3" Margin="5"/>
+
+                        <StackPanel Grid.Row="4" Grid.ColumnSpan="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 10 0 0">
+                            <Button x:Name="AddButton" Content="Добавить" Width="100" Margin="5" Click="AddButton_Click"/>
+                            <Button x:Name="SaveButton" Content="Сохранить" Width="100" Margin="5" Click="SaveButton_Click"/>
+                            <Button x:Name="CancelButton" Content="Отмена" Width="100" Margin="5" Click="CancelButton_Click"/>
+                            <Button x:Name="DeleteButton" Content="Удалить" Width="100" Margin="5" Background="#FFD32F2F" Foreground="White" Click="DeleteButton_Click"/>
+                        </StackPanel>
+                    </Grid>
+                </GroupBox>
+
+                <!-- Нижняя часть - список гостей -->
+                <GroupBox Grid.Row="1" Header="Список гостей" Margin="10">
+                    <DockPanel>
+                        <TextBox x:Name="SearchTextBox" DockPanel.Dock="Top" Margin="0 0 0 10" 
+                                 TextChanged="SearchTextBox_TextChanged"/>
+
+                        <DataGrid x:Name="GuestsDataGrid" 
+                                 AutoGenerateColumns="False"
+                                 SelectionMode="Single"
+                                 SelectionChanged="GuestsDataGrid_SelectionChanged">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID" Binding="{Binding GuestId}" Width="Auto" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="ФИО" Binding="{Binding FullName}" Width="*"/>
+                                <DataGridTextColumn Header="Паспорт" Binding="{Binding PassportData}" Width="150"/>
+                                <DataGridTextColumn Header="Телефон" Binding="{Binding ContactPhone}" Width="120"/>
+                                <DataGridTextColumn Header="Email" Binding="{Binding ContactEmail}" Width="150"/>
+                                <DataGridTextColumn Header="Логин" Binding="{Binding User.Login}" Width="120"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                </GroupBox>
+            </Grid>
+        </DockPanel>
+    </Grid>
+</Window>

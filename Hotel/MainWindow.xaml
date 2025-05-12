@@ -14,7 +14,7 @@
         <!--xmlns:sys="clr-namespace:System;assembly=netstandard"-->
 
     <Window.Resources>
-        <converters:AddDaysConverter x:Key="AddDaysConverter"/>
+        <!--<converters:AddDaysConverter x:Key="AddDaysConverter"/>-->
     </Window.Resources>
 
     <Grid Background="#FFF0F5FF">
@@ -35,37 +35,14 @@
                            FontSize="16"
                            FontWeight="Bold"
                            Margin="20 0 0 0"/>
-                <Button Content="Спа-процедуры" 
+                <Button Content="Менеджер таблиц" 
 Width="100" 
 Background="Transparent" 
 Foreground="White"
 BorderThickness="0"
 FontWeight="Bold"
-Margin="10 0 0 0" Click="SpaServiceOrderButton_Click"/>
-                <Button x:Name="ServiceBtn"
-                    Content="Услуги" 
-         Width="100" 
-         Background="Transparent" 
-         Foreground="White"
-         BorderThickness="0"
-         FontWeight="Bold"
-         Margin="10 0 0 0" Click="ServiceButton_Click"/>
-                <Button x:Name="SpaServiseBtn"
-                    Content="Спа-услуги" 
-Width="100" 
-Background="Transparent" 
-Foreground="White"
-BorderThickness="0"
-FontWeight="Bold"
-Margin="10 0 0 0" Click="SpaServiceButton_Click"/>
-                <Button x:Name="EmployeeMenegement"
-                    Content="Сотрудники" 
-Width="100" 
-Background="Transparent" 
-Foreground="White"
-BorderThickness="0"
-FontWeight="Bold"
-Margin="10 0 0 0" Click="EmployeeView_Click"/>
+Margin="10 0 0 0" Click="MenageBtn_Click"/>
+                
             </StackPanel>
 
             <!-- Основное содержимое -->
@@ -80,15 +57,9 @@ Margin="10 0 0 0" Click="EmployeeView_Click"/>
 
                             <TextBlock Text="Дата выезда:" Width="100" VerticalAlignment="Center" Margin="10,0,0,0"/>
                             <DatePicker x:Name="CheckOutDatePicker" 
-            Width="120"
-            SelectedDate="{Binding ElementName=CheckInDatePicker, 
-                                 Path=SelectedDate, 
-                                 Converter={StaticResource AddDaysConverter}, 
-                                 ConverterParameter=1}"
-            DisplayDateStart="{Binding ElementName=CheckInDatePicker, 
-                                    Path=SelectedDate, 
-                                    Converter={StaticResource AddDaysConverter}, 
-                                    ConverterParameter=1}"/>
+            Width="120" SelectedDate="{x:Static sys:DateTime.Today}"
+ DisplayDateStart="{x:Static sys:DateTime.Today}"/>
+  
                             <Button Content="Применить фильтры" Margin="10,0,0,0" 
                                    Click="ApplyFilters_Click" Width="150"/>
                         </StackPanel>

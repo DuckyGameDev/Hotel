@@ -46,22 +46,22 @@ namespace Hotel.Converters
     }
 
 
-    public class AddDaysConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value is DateTime selectedDate && int.TryParse(parameter?.ToString(), out int days))
-            {
-                return selectedDate.AddDays(days);
-            }
-            return value;
-        }
+    //public class AddDaysConverter : IValueConverter
+    //{
+    //    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    //    {
+    //        if (value is DateTime selectedDate && int.TryParse(parameter?.ToString(), out int days))
+    //        {
+    //            return selectedDate.AddDays(days);
+    //        }
+    //        return value;
+    //    }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
+    //    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+    //}
 
     public class DateAvailabilityConverter : IValueConverter
     {

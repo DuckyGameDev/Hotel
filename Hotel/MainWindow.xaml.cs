@@ -41,13 +41,11 @@ namespace Hotel
                 if (CheckInDatePicker.SelectedDate.HasValue)
                 {
                     var newCheckIn = CheckInDatePicker.SelectedDate.Value;
-                    CheckOutDatePicker.SelectedDate = newCheckIn.AddDays(1);
+                    //CheckOutDatePicker.SelectedDate = newCheckIn.AddDays(1);
                 }
             };
             if (Application.IsGuest)
             {
-                ServiceBtn.Visibility = Visibility.Hidden;
-                SpaServiseBtn.Visibility = Visibility.Hidden;
                 AddRoomBtn.Visibility = Visibility.Hidden;
                 EditRoomBtn.Visibility = Visibility.Hidden;
                 DeleteRoomBtn.Visibility = Visibility.Hidden;
@@ -58,6 +56,7 @@ namespace Hotel
         {
             _context.Roomcategories.Load();
             CategoryComboBox.ItemsSource = _context.Roomcategories.Local.ToObservableCollection();
+            //CategoryComboBox.Items.Insert(0, "Все");
             CategoryComboBox.SelectedIndex = 0;
         }
 
@@ -234,31 +233,11 @@ namespace Hotel
             this.Close();
         }
 
-        private void ServiceButton_Click(object sender, RoutedEventArgs e)
-        {
-            var servicesWindow = new ServicesManagementWindow();
-            servicesWindow.Show();
-            this.Close();
-        }
 
-        private void SpaServiceButton_Click(object sender, RoutedEventArgs e)
+        private void MenageBtn_Click(object sender, RoutedEventArgs e)
         {
-            var spaserviceWindow = new SpaServicesManagementWindow();
-            spaserviceWindow.Show();
-            this.Close();
-        }
-
-        private void SpaServiceOrderButton_Click(object sender, RoutedEventArgs e)
-        {
-            SpaOrderWindow orderWindow = new SpaOrderWindow();
-            orderWindow.Show();
-            this.Close();
-        }
-
-        private void EmployeeView_Click(object sender, RoutedEventArgs e)
-        {
-            var employeesWindow = new EmployeeManagementWindow();
-            employeesWindow.Show();
+            MenegeWindow menegeWindow = new MenegeWindow();
+            menegeWindow.Show();
             this.Close();
         }
     }

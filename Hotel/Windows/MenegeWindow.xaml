@@ -1,0 +1,90 @@
+﻿<Window x:Class="Hotel.Windows.MenegeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Hotel.Windows"
+        mc:Ignorable="d"
+        Title="MenegeWindow" Height="450" Width="800" >
+    <Grid Background="#FF4A6FAE"  >
+        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center">
+            
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,20,0,0" >
+                <Button x:Name="RoomCategoryManagementWindow"
+                Content="Категории номеров" 
+                Width="100" 
+                Background="Transparent" 
+                Foreground="White"
+                BorderThickness="0"
+                FontWeight="Bold"
+                Margin="10 0 0 0" Click="RoomCategoryManagementWindow_Click"/>
+                <Button Content="Спа-процедуры" 
+Width="100" 
+Background="Transparent" 
+Foreground="White"
+BorderThickness="0"
+FontWeight="Bold"
+Margin="10 0 0 0" Click="SpaServiceOrderButton_Click"/>
+            <Button x:Name="ServiceBtn"
+                    Content="Услуги" 
+         Width="100" 
+         Background="Transparent" 
+         Foreground="White"
+         BorderThickness="0"
+         FontWeight="Bold"
+         Margin="10 0 0 0" Click="ServiceButton_Click"/>
+                <Button x:Name="ServiceOrderBtn"
+           Content="Заказы на услуги" 
+Width="100" 
+Background="Transparent" 
+Foreground="White"
+BorderThickness="0"
+FontWeight="Bold"
+Margin="10 0 0 0" Click="ServiceOrderButton_Click"/>
+                <Button x:Name="SpaServiseBtn"
+                    Content="Спа-услуги" 
+Width="100" 
+Background="Transparent" 
+Foreground="White"
+BorderThickness="0"
+FontWeight="Bold"
+Margin="10 0 0 0" Click="SpaServiceButton_Click"/>
+            <Button x:Name="EmployeeMenegement"
+                    Content="Сотрудники" 
+Width="100" 
+Background="Transparent" 
+Foreground="White"
+BorderThickness="0"
+FontWeight="Bold"
+Margin="10 0 0 0" Click="EmployeeView_Click"/>
+            <Button x:Name="BookingMenegement"
+                    Content="Бронирования" 
+Width="100" 
+Background="Transparent" 
+Foreground="White"
+BorderThickness="0"
+FontWeight="Bold"
+Margin="10 0 0 0" Click="BookingMenegement_Click"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,20,0,0" Grid.Row="2" >
+                <Button x:Name="GuestManagementWindow"
+                    Content="Гости" 
+Width="100" 
+Background="Transparent" 
+Foreground="White"
+BorderThickness="0"
+FontWeight="Bold"
+Margin="10 0 0 0" Click="GuestManagementWindow_Click"/>
+                <Button x:Name="SpaServiceOrderManagementWindow"
+ Content="Заказы СПА" 
+ Width="100" 
+ Background="Transparent" 
+ Foreground="White"
+ BorderThickness="0"
+ FontWeight="Bold"
+ Margin="10 0 0 0" Click="SpaServiceOrderManagementWindow_Click"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>
