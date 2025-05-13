@@ -42,8 +42,10 @@ namespace Hotel
                 {
                     var newCheckIn = CheckInDatePicker.SelectedDate.Value;
                     CheckOutDatePicker.SelectedDate = newCheckIn.AddDays(1);
+                    CheckOutDatePicker.DisplayDateStart = newCheckIn.AddDays(1);
                 }
             };
+            
             if (Application.IsGuest)
             {
                 ServiceBtn.Visibility = Visibility.Hidden;

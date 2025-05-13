@@ -7,6 +7,8 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 using Application = Hotel.Data.Application;
 
 namespace Hotel.Windows
@@ -28,33 +30,13 @@ namespace Hotel.Windows
 
         private readonly ApplicationDbContext _context = new ApplicationDbContext();
 
-        public List<DateTime> BookedDates { get; set; } = new List<DateTime>();
-
         public BookingWindow(Room room) : this(null, false)
         {
-            InitializeComponent();
             Room = room;
-            LoadBookedDates();
-            LoadUserData(); // Загружаем данные пользователя
+            InitializeComponent();
+            LoadUserData();
             LoadServices();
-        }
-
-        private void LoadBookedDates()
-        {
-            // Получаем все бронирования для номера
-            var bookings = _context.Bookings
-                .Where(b => b.RoomId == Room.RoomId)
-                .Include(b => b.Room)
-                .ToList();
-
-            // Заполняем список занятых дат
-            foreach (var booking in bookings)
-            {
-                for (var date = booking.CheckInDate; date < booking.CheckOutDate; date = date.AddDays(1))
-                {
-                    BookedDates.Add(date.ToDateTime(TimeOnly.MinValue));
-                }
-            }
+            InitializeDatePickers();
         }
 
         public BookingWindow(Booking booking, bool isEditMode)
@@ -80,12 +62,11 @@ namespace Hotel.Windows
             }
 
             DataContext = this;
+            InitializeDatePickers();
         }
 
-
-
         public BookingWindow(Room room, DateOnly checkInDate, DateOnly checkOutDate)
-       : this(null, false)
+            : this(null, false)
         {
             Room = room;
             CheckInDate = checkInDate.ToDateTime(TimeOnly.MinValue);
@@ -93,6 +74,46 @@ namespace Hotel.Windows
             InitializeComponent();
             LoadUserData();
             LoadServices();
+            InitializeDatePickers();
+        }
+
+        private void InitializeDatePickers()
+        {
+            CheckInDatePicker.BlackoutDates.Clear();
+            CheckOutDatePicker.BlackoutDates.Clear();
+
+            if (Room != null)
+            {
+                // Измененная строка - убрали оператор ?. из лямбда-выражения
+                var currentBookingId = CurrentBooking != null ? CurrentBooking.BookingId : 0;
+                var bookedDates = _context.Bookings
+                    .Where(b => b.RoomId == Room.RoomId && b.BookingId != currentBookingId)
+                    .ToList();
+
+                foreach (var booking in bookedDates)
+                {
+                    var startDate = booking.CheckInDate.ToDateTime(TimeOnly.MinValue);
+                    var endDate = booking.CheckOutDate.ToDateTime(TimeOnly.MinValue);
+
+                    for (var date = startDate; date < endDate; date = date.AddDays(1))
+                    {
+                        CheckInDatePicker.BlackoutDates.Add(new CalendarDateRange(date));
+                        CheckOutDatePicker.BlackoutDates.Add(new CalendarDateRange(date));
+                    }
+                }
+            }
+
+            CheckInDatePicker.SelectedDateChanged += (sender, e) =>
+            {
+                if (CheckInDatePicker.SelectedDate.HasValue)
+                {
+                    CheckOutDatePicker.DisplayDateStart = CheckInDatePicker.SelectedDate.Value;
+                    if (CheckOutDatePicker.SelectedDate < CheckInDatePicker.SelectedDate)
+                    {
+                        CheckOutDatePicker.SelectedDate = CheckInDatePicker.SelectedDate.Value.AddDays(1);
+                    }
+                }
+            };
         }
 
         private void LoadUserData()
@@ -104,7 +125,6 @@ namespace Hotel.Windows
                 GuestPhone = Application.CurrentGuest.ContactPhone;
                 GuestEmail = Application.CurrentGuest.ContactEmail ?? string.Empty;
 
-                // Делаем поля только для чтения, если пользователь авторизован
                 FullNameTextBox.IsReadOnly = true;
                 PassportTextBox.IsReadOnly = true;
                 PhoneTextBox.IsReadOnly = true;
@@ -158,24 +178,20 @@ namespace Hotel.Windows
             {
                 if (IsEditMode && CurrentBooking != null)
                 {
-                    // Редактирование существующего бронирования
                     CurrentBooking.CheckInDate = DateOnly.FromDateTime(CheckInDate);
                     CurrentBooking.CheckOutDate = DateOnly.FromDateTime(CheckOutDate);
                     UpdateSelectedServices(CurrentBooking);
                 }
                 else
                 {
-                    // Создание нового бронирования
                     Guest guest;
 
                     if (Application.CurrentGuest != null)
                     {
-                        // Используем существующего гостя (текущего пользователя)
                         guest = _context.Guests.Find(Application.CurrentGuest.GuestId);
                     }
                     else
                     {
-                        // Создаем нового гостя (для неавторизованных пользователей)
                         guest = new Guest
                         {
                             FullName = GuestFullName,
@@ -200,8 +216,6 @@ namespace Hotel.Windows
                     _context.Rooms.Update(Room);
                 }
 
-
-
                 _context.SaveChanges();
                 MessageBox.Show("Бронирование успешно оформлено!");
                 DialogResult = true;
@@ -209,13 +223,10 @@ namespace Hotel.Windows
             }
             catch (Exception ex)
             {
-
                 string errorDetails = ex.Message;
                 if (ex.InnerException != null)
                 {
                     errorDetails += "\nInner Exception: " + ex.InnerException.Message;
-
-                    // Для более глубокой диагностики:
                     if (ex.InnerException.InnerException != null)
                     {
                         errorDetails += "\n" + ex.InnerException.InnerException.Message;
@@ -223,15 +234,11 @@ namespace Hotel.Windows
                 }
 
                 MessageBox.Show($"Ошибка при бронировании: {errorDetails}");
-
-                // Для отладки (можно удалить в продакшене)
                 Debug.WriteLine("FULL ERROR:");
                 Debug.WriteLine(ex.ToString());
             }
         }
-        
 
-        // Остальные методы остаются без изменений...
         private Dictionary<TimeOnly, string> GetAvailableTimes()
         {
             return new Dictionary<TimeOnly, string>

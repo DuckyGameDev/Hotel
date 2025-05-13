@@ -59,7 +59,11 @@ namespace Hotel.Converters
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            if (value is DateTime selectedDate && int.TryParse(parameter?.ToString(), out int days))
+            {
+                return selectedDate.AddDays(-days); // обратное преобразование
+            }
+            return value;
         }
     }
 
