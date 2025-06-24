@@ -7,6 +7,31 @@
     <Application.Resources>
         <!-- Стиль для кнопки-ссылки -->
 
+        <Style x:Key="HeaderButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="100"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="5"/>
+        </Style>
+
+        <Style x:Key="ActionButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#FF4A6FAE"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#3A5F90"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="5"/>
+        </Style>
+
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button" BasedOn="{StaticResource ActionButtonStyle}">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Background" Value="#FF2E7D32"/>
+            <Setter Property="BorderBrush" Value="#1B5E20"/>
+        </Style>
+
+
+
         <Style TargetType="Window">
             <Setter Property="WindowState" Value="Maximized"/>
             <Setter Property="WindowStartupLocation" Value="CenterScreen"/>

@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using Application = Hotel.Data.Application;
 
 namespace Hotel.Windows
@@ -28,12 +28,13 @@ namespace Hotel.Windows
 
         public ObservableCollection<ServiceSelection> AvailableServices { get; set; } = new ObservableCollection<ServiceSelection>();
 
-        private readonly ApplicationDbContext _context = new ApplicationDbContext();
+        private ApplicationDbContext _context;
 
         public BookingWindow(Room room) : this(null, false)
         {
             Room = room;
             InitializeComponent();
+            _context = new ApplicationDbContext();
             LoadUserData();
             LoadServices();
             InitializeDatePickers();
@@ -43,18 +44,35 @@ namespace Hotel.Windows
         {
             InitializeComponent();
             IsEditMode = isEditMode;
-            CurrentBooking = booking;
+            _context = new ApplicationDbContext();
 
             if (isEditMode && booking != null)
             {
-                Room = booking.Room;
-                GuestFullName = booking.Guest.FullName;
-                GuestPassport = booking.Guest.PassportData;
-                GuestPhone = booking.Guest.ContactPhone;
-                GuestEmail = booking.Guest.ContactEmail;
-                CheckInDate = booking.CheckInDate.ToDateTime(TimeOnly.MinValue);
-                CheckOutDate = booking.CheckOutDate.ToDateTime(TimeOnly.MinValue);
-                LoadServices();
+                // Получаем бронирование с AsNoTracking и затем присоединяем
+                CurrentBooking = _context.Bookings
+                    .Include(b => b.Room)
+                    .ThenInclude(r => r.Category)
+                    .Include(b => b.Guest)
+                    .Include(b => b.Serviceorders)
+                    .ThenInclude(so => so.Service)
+                    .AsNoTracking()
+                    .FirstOrDefault(b => b.BookingId == booking.BookingId);
+
+                if (CurrentBooking != null)
+                {
+                    // Присоединяем и начинаем отслеживать
+                    _context.Bookings.Attach(CurrentBooking);
+                    _context.Entry(CurrentBooking).State = EntityState.Modified;
+
+                    Room = CurrentBooking.Room;
+                    GuestFullName = CurrentBooking.Guest.FullName;
+                    GuestPassport = CurrentBooking.Guest.PassportData;
+                    GuestPhone = CurrentBooking.Guest.ContactPhone;
+                    GuestEmail = CurrentBooking.Guest.ContactEmail;
+                    CheckInDate = CurrentBooking.CheckInDate.ToDateTime(TimeOnly.MinValue);
+                    CheckOutDate = CurrentBooking.CheckOutDate.ToDateTime(TimeOnly.MinValue);
+                    LoadServices();
+                }
             }
             else
             {
@@ -72,9 +90,16 @@ namespace Hotel.Windows
             CheckInDate = checkInDate.ToDateTime(TimeOnly.MinValue);
             CheckOutDate = checkOutDate.ToDateTime(TimeOnly.MinValue);
             InitializeComponent();
+            _context = new ApplicationDbContext();
             LoadUserData();
             LoadServices();
             InitializeDatePickers();
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            _context?.Dispose();
+            base.OnClosed(e);
         }
 
         private void InitializeDatePickers()
@@ -84,10 +109,10 @@ namespace Hotel.Windows
 
             if (Room != null)
             {
-                // Измененная строка - убрали оператор ?. из лямбда-выражения
                 var currentBookingId = CurrentBooking != null ? CurrentBooking.BookingId : 0;
                 var bookedDates = _context.Bookings
                     .Where(b => b.RoomId == Room.RoomId && b.BookingId != currentBookingId)
+                    .AsNoTracking()
                     .ToList();
 
                 foreach (var booking in bookedDates)
@@ -178,9 +203,16 @@ namespace Hotel.Windows
             {
                 if (IsEditMode && CurrentBooking != null)
                 {
+                    // Обновляем основные свойства
                     CurrentBooking.CheckInDate = DateOnly.FromDateTime(CheckInDate);
                     CurrentBooking.CheckOutDate = DateOnly.FromDateTime(CheckOutDate);
+                    
+                    // Обновляем связанные сервисы
                     UpdateSelectedServices(CurrentBooking);
+                    
+                    // Обновляем статус комнаты
+                    Room.Status = "занят";
+                    _context.Entry(Room).State = EntityState.Modified;
                 }
                 else
                 {
@@ -213,7 +245,7 @@ namespace Hotel.Windows
                     AddSelectedServices(booking);
                     Room.Status = "занят";
                     _context.Bookings.Add(booking);
-                    _context.Rooms.Update(Room);
+                    _context.Entry(Room).State = EntityState.Modified;
                 }
 
                 _context.SaveChanges();
@@ -223,20 +255,29 @@ namespace Hotel.Windows
             }
             catch (Exception ex)
             {
-                string errorDetails = ex.Message;
-                if (ex.InnerException != null)
-                {
-                    errorDetails += "\nInner Exception: " + ex.InnerException.Message;
-                    if (ex.InnerException.InnerException != null)
-                    {
-                        errorDetails += "\n" + ex.InnerException.InnerException.Message;
-                    }
-                }
-
+                string errorDetails = BuildErrorMessage(ex);
                 MessageBox.Show($"Ошибка при бронировании: {errorDetails}");
                 Debug.WriteLine("FULL ERROR:");
                 Debug.WriteLine(ex.ToString());
             }
+        }
+
+        private string BuildErrorMessage(Exception ex)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine(ex.Message);
+            
+            Exception inner = ex.InnerException;
+            int level = 1;
+            
+            while (inner != null)
+            {
+                sb.AppendLine(new string(' ', level * 2) + "↳ " + inner.Message);
+                inner = inner.InnerException;
+                level++;
+            }
+            
+            return sb.ToString();
         }
 
         private Dictionary<TimeOnly, string> GetAvailableTimes()
@@ -265,33 +306,43 @@ namespace Hotel.Windows
 
         private void UpdateSelectedServices(Booking booking)
         {
-            var servicesToRemove = booking.Serviceorders
-                .Where(so => !AvailableServices.Any(s => s.IsSelected && s.Service.ServiceId == so.ServiceId))
+            // Загружаем текущие сервисные заказы
+            var existingOrders = _context.Serviceorders
+                .Where(so => so.BookingId == booking.BookingId)
+                .ToList();
+
+            // Удаляем невыбранные сервисы
+            var servicesToRemove = existingOrders
+                .Where(eo => !AvailableServices.Any(s => s.IsSelected && s.Service.ServiceId == eo.ServiceId))
                 .ToList();
 
             foreach (var service in servicesToRemove)
             {
-                booking.Serviceorders.Remove(service);
+                _context.Serviceorders.Remove(service);
             }
 
+            // Добавляем или обновляем выбранные сервисы
             foreach (var selectedService in AvailableServices.Where(s => s.IsSelected))
             {
-                var existingOrder = booking.Serviceorders
+                var existingOrder = existingOrders
                     .FirstOrDefault(so => so.ServiceId == selectedService.Service.ServiceId);
 
                 if (existingOrder != null)
                 {
                     existingOrder.ServiceDate = DateOnly.FromDateTime(selectedService.ServiceDate);
                     existingOrder.ServiceTime = selectedService.ServiceTime;
+                    _context.Entry(existingOrder).State = EntityState.Modified;
                 }
                 else
                 {
-                    booking.Serviceorders.Add(new Serviceorder
+                    var newOrder = new Serviceorder
                     {
+                        BookingId = booking.BookingId,
                         ServiceId = selectedService.Service.ServiceId,
                         ServiceDate = DateOnly.FromDateTime(selectedService.ServiceDate),
                         ServiceTime = selectedService.ServiceTime
-                    });
+                    };
+                    _context.Serviceorders.Add(newOrder);
                 }
             }
         }

@@ -4,145 +4,190 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hotel"
-        xmlns:converters="clr-namespace:Hotel.Converters" 
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="Гостиница - Бронирование номеров" 
-        Height="600" Width="900"
-        WindowStartupLocation="CenterScreen">
+        Height="650" Width="1000"
+        WindowStartupLocation="CenterScreen"
+        Background="#FFF0F5FF">
 
-        <!--xmlns:sys="clr-namespace:System;assembly=netstandard"-->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-    <Window.Resources>
-        <!--<converters:AddDaysConverter x:Key="AddDaysConverter"/>-->
-    </Window.Resources>
-
-    <Grid Background="#FFF0F5FF">
-        <!-- Шапка с кнопкой профиля -->
-        <DockPanel>
-            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" 
-                        Background="#FF4A6FAE" Height="50">
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#FF4A6FAE" Padding="10">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
                 <Button Content="Профиль" 
-                        Width="100" 
-                        Background="Transparent" 
-                        Foreground="White"
-                        BorderThickness="0"
-                        FontWeight="Bold"
-                        Margin="10 0 0 0" Click="Button_Click"/>
-                <TextBlock Text="Выбирайте лучшее" 
+                        Style="{StaticResource HeaderButtonStyle}"
+                        Click="ProfileButton_Click"/>
+
+                <TextBlock Text="Гостиница - Система бронирования" 
                            Foreground="White"
                            VerticalAlignment="Center"
-                           FontSize="16"
+                           FontSize="18"
                            FontWeight="Bold"
-                           Margin="20 0 0 0"/>
-                <Button Content="Менеджер таблиц" 
-Width="100" 
-Background="Transparent" 
-Foreground="White"
-BorderThickness="0"
-FontWeight="Bold"
-Margin="10 0 0 0" Click="MenageBtn_Click"/>
-                
-            </StackPanel>
+                           Margin="20,0,0,0"/>
 
-            <!-- Основное содержимое -->
-            <StackPanel Margin="20">
-                <GroupBox Header="Фильтры">
-                    <StackPanel>
+                <Button x:Name="ManageBtn"
+                        Content="Управление" 
+                        Style="{StaticResource HeaderButtonStyle}"
+                        Click="ManageBtn_Click"
+                        Margin="20,0,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content -->
+        <Grid Grid.Row="1" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Filters Panel -->
+            <GroupBox Grid.Row="0" Header="Фильтры поиска" Margin="0,0,0,10">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Dates -->
+                    <StackPanel Grid.Column="0" Orientation="Vertical" Margin="5">
                         <StackPanel Orientation="Horizontal" Margin="0,5">
                             <TextBlock Text="Дата заезда:" Width="100" VerticalAlignment="Center"/>
-                            <DatePicker x:Name="CheckInDatePicker" Width="120" 
-                                        SelectedDate="{x:Static sys:DateTime.Today}"
-                                        DisplayDateStart="{x:Static sys:DateTime.Today}"/>
-
-                            <TextBlock Text="Дата выезда:" Width="100" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                            <DatePicker x:Name="CheckOutDatePicker" 
-            Width="120" SelectedDate="{x:Static sys:DateTime.Today}"
- DisplayDateStart="{x:Static sys:DateTime.Today}"/>
-  
-                            <Button Content="Применить фильтры" Margin="10,0,0,0" 
-                                   Click="ApplyFilters_Click" Width="150"/>
+                            <DatePicker x:Name="CheckInDatePicker" Width="150" 
+                                       SelectedDate="{x:Static sys:DateTime.Today}"
+                                       DisplayDateStart="{x:Static sys:DateTime.Today}"/>
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Margin="0,5">
-                            <TextBlock Text="Категория:" Width="100" VerticalAlignment="Center"/>
-                            <ComboBox x:Name="CategoryComboBox" Width="150" DisplayMemberPath="CategoryName"/>
-
-                            <TextBlock Text="Цена до:" Width="100" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                            <TextBox x:Name="MaxPriceTextBox" Width="120"/>
+                            <TextBlock Text="Дата выезда:" Width="100" VerticalAlignment="Center"/>
+                            <DatePicker x:Name="CheckOutDatePicker" Width="150"
+                                       SelectedDate="{x:Static sys:DateTime.Today}"
+                                       DisplayDateStart="{x:Static sys:DateTime.Today}"/>
                         </StackPanel>
                     </StackPanel>
-                </GroupBox>
 
-                <ListView Name="RoomsListView" 
-                         Background="White"
-                         BorderThickness="0"
-                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                         Margin="0,10">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Width="0" DisplayMemberBinding="{Binding RoomId}"/>
-                            <GridViewColumn Header="Номер" Width="100" DisplayMemberBinding="{Binding RoomNumber}"/>
-                            <GridViewColumn Header="Категория" Width="150" DisplayMemberBinding="{Binding Category.CategoryName}"/>
-                            <GridViewColumn Header="Описание" Width="200" DisplayMemberBinding="{Binding Category.Description}"/>
-                            <GridViewColumn Header="Цена" Width="100">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Category.PricePerNight, StringFormat='{}{0:C}'}"/>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                        </GridView>
-                    </ListView.View>
+                    <!-- Category and Price -->
+                    <StackPanel Grid.Column="1" Orientation="Vertical" Margin="5">
+                        <StackPanel Orientation="Horizontal" Margin="0,5">
+                            <TextBlock Text="Категория:" Width="100" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="CategoryComboBox" Width="200" 
+                                      DisplayMemberPath="CategoryName"
+                                      SelectedIndex="-1"/>
+                        </StackPanel>
 
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
-                            <Setter Property="Margin" Value="0 0 0 10"/>
-                            <Setter Property="Padding" Value="10"/>
-                            <Setter Property="Background" Value="White"/>
-                            <Setter Property="BorderBrush" Value="#EEE"/>
-                            <Setter Property="BorderThickness" Value="1"/>
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                        </Style>
-                    </ListView.ItemContainerStyle>
-                </ListView>
+                        <StackPanel Orientation="Horizontal" Margin="0,5">
+                            <TextBlock Text="Макс. цена:" Width="100" VerticalAlignment="Center"/>
+                            <TextBox x:Name="MaxPriceTextBox" Width="200"/>
+                            <TextBlock Text="руб./ночь" Margin="5,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </StackPanel>
 
-                <!-- Панель кнопок -->
-                <StackPanel Orientation="Horizontal" 
-                            HorizontalAlignment="Right" 
-                            Margin="0 20 0 0">
-                    <Button x:Name="AddRoomBtn"
-                        Content="Добавить номер" 
-                            Width="120" 
-                            Margin="0 0 10 0" 
-                            Click="AddRoom_Click"
-                            Background="#FF4A6FAE"
-                            Foreground="White"/>
+                    <!-- Apply Button -->
+                    <Button Grid.Column="2" Content="Применить фильтры" 
+                            Width="150" Height="60" Margin="10"
+                            Click="ApplyFilters_Click"
+                            Style="{StaticResource ActionButtonStyle}"/>
+                </Grid>
+            </GroupBox>
 
-                    <Button x:Name="EditRoomBtn"
-                        Content="Редактировать" 
-                            Width="120" 
-                            Margin="0 0 10 0" 
-                            Click="EditRoom_Click"
-                            Background="#FF4A6FAE"
-                            Foreground="White"/>
+            <!-- Rooms List -->
+            <Border Grid.Row="1" BorderBrush="#DDD" BorderThickness="1" CornerRadius="3">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                    <Button x:Name="DeleteRoomBtn"
-                        Content="Удалить" 
-                            Width="120" 
-                            Margin="0 0 10 0" 
-                            Click="DeleteRoom_Click"
-                            Background="#FF4A6FAE"
-                            Foreground="White"/>
+                    <TextBlock x:Name="StatusTextBlock" Grid.Row="0" Margin="5" 
+                               Text="Найдено номеров: 0" FontWeight="Bold"/>
 
-                    <Button Content="Бронировать" 
-                            Width="120" 
-                            Click="BookRoomButton_Click"
-                            Background="#FF4A6FAE"
-                            Foreground="White"
-                            FontWeight="Bold"/>
-                </StackPanel>
+                    <ListView x:Name="RoomsListView" Grid.Row="1" BorderThickness="0">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Width="0" DisplayMemberBinding="{Binding RoomId}"/>
+                                <GridViewColumn Header="Номер" Width="80" DisplayMemberBinding="{Binding RoomNumber}"/>
+                                <GridViewColumn Header="Категория" Width="150" DisplayMemberBinding="{Binding Category.CategoryName}"/>
+                                <GridViewColumn Header="Описание" Width="250" DisplayMemberBinding="{Binding Category.Description}"/>
+                                <GridViewColumn Header="Цена за ночь" Width="120">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Category.PricePerNight, StringFormat='{}{0:N0} руб.'}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Статус" Width="100" DisplayMemberBinding="{Binding Status}"/>
+                            </GridView>
+                        </ListView.View>
+
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="Padding" Value="5"/>
+                                <Setter Property="Margin" Value="0,0,0,2"/>
+                                <Setter Property="Background" Value="White"/>
+                                <Setter Property="BorderBrush" Value="#EEE"/>
+                                <Setter Property="BorderThickness" Value="1"/>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                    </ListView>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Action Buttons -->
+        <Border Grid.Row="2" Background="#EEE" Padding="10">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="AddRoomBtn" Content="Добавить номер" 
+                        Width="120" Margin="0,0,10,0" 
+                        Click="AddRoom_Click"
+                        Style="{StaticResource ActionButtonStyle}"/>
+
+                <Button x:Name="EditRoomBtn" Content="Редактировать" 
+                        Width="120" Margin="0,0,10,0" 
+                        Click="EditRoom_Click"
+                        Style="{StaticResource ActionButtonStyle}"/>
+
+                <Button x:Name="DeleteRoomBtn" Content="Удалить" 
+                        Width="120" Margin="0,0,10,0" 
+                        Click="DeleteRoom_Click"
+                        Style="{StaticResource ActionButtonStyle}"/>
+
+                <Button Content="Бронировать" 
+                        Width="120" 
+                        Click="BookRoomButton_Click"
+                        Style="{StaticResource PrimaryButtonStyle}"/>
             </StackPanel>
-        </DockPanel>
+        </Border>
     </Grid>
+
+    <Window.Resources>
+        <Style x:Key="HeaderButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="100"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="5"/>
+        </Style>
+
+        <Style x:Key="ActionButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#FF4A6FAE"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#3A5F90"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="5"/>
+        </Style>
+
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button" BasedOn="{StaticResource ActionButtonStyle}">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Background" Value="#FF2E7D32"/>
+            <Setter Property="BorderBrush" Value="#1B5E20"/>
+        </Style>
+    </Window.Resources>
 </Window>
