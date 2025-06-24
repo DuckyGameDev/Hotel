@@ -94,9 +94,9 @@ namespace Hotel
             // Проверка, что выезд минимум на 1 день позже заезда
             if (checkOut.Date <= checkIn.Date)
             {
-                Debug.WriteLine(checkIn);
-                Debug.WriteLine(checkOut);
-                MessageBox.Show("Дата выезда должна быть позже даты заезда");
+                //Debug.WriteLine(checkIn);
+                //Debug.WriteLine(checkOut);
+                //MessageBox.Show("Дата выезда должна быть позже даты заезда");
                 return;
             }
 
