@@ -5,86 +5,214 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hotel.Windows"
         mc:Ignorable="d"
-        Title="MenegeWindow" Height="450" Width="800" >
-    <Grid Background="#FF4A6FAE"  >
-        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center">
-            
+        Title="Управление отелем" Height="720" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        FontFamily="Segoe UI">
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,20,0,0" >
-                <Button x:Name="RoomCategoryManagementWindow"
-                Content="Категории номеров" 
-                Width="100" 
-                Background="Transparent" 
-                Foreground="White"
-                BorderThickness="0"
-                FontWeight="Bold"
-                Margin="10 0 0 0" Click="RoomCategoryManagementWindow_Click"/>
-                <Button Content="Спа-процедуры" 
-Width="100" 
-Background="Transparent" 
-Foreground="White"
-BorderThickness="0"
-FontWeight="Bold"
-Margin="10 0 0 0" Click="SpaServiceOrderButton_Click"/>
-            <Button x:Name="ServiceBtn"
-                    Content="Услуги" 
-         Width="100" 
-         Background="Transparent" 
-         Foreground="White"
-         BorderThickness="0"
-         FontWeight="Bold"
-         Margin="10 0 0 0" Click="ServiceButton_Click"/>
-                <Button x:Name="ServiceOrderBtn"
-           Content="Заказы на услуги" 
-Width="100" 
-Background="Transparent" 
-Foreground="White"
-BorderThickness="0"
-FontWeight="Bold"
-Margin="10 0 0 0" Click="ServiceOrderButton_Click"/>
-                <Button x:Name="SpaServiseBtn"
-                    Content="Спа-услуги" 
-Width="100" 
-Background="Transparent" 
-Foreground="White"
-BorderThickness="0"
-FontWeight="Bold"
-Margin="10 0 0 0" Click="SpaServiceButton_Click"/>
-            <Button x:Name="EmployeeMenegement"
-                    Content="Сотрудники" 
-Width="100" 
-Background="Transparent" 
-Foreground="White"
-BorderThickness="0"
-FontWeight="Bold"
-Margin="10 0 0 0" Click="EmployeeView_Click"/>
-            <Button x:Name="BookingMenegement"
-                    Content="Бронирования" 
-Width="100" 
-Background="Transparent" 
-Foreground="White"
-BorderThickness="0"
-FontWeight="Bold"
-Margin="10 0 0 0" Click="BookingMenegement_Click"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,20,0,0" Grid.Row="2" >
-                <Button x:Name="GuestManagementWindow"
-                    Content="Гости" 
-Width="100" 
-Background="Transparent" 
-Foreground="White"
-BorderThickness="0"
-FontWeight="Bold"
-Margin="10 0 0 0" Click="GuestManagementWindow_Click"/>
-                <Button x:Name="SpaServiceOrderManagementWindow"
- Content="Заказы СПА" 
- Width="100" 
- Background="Transparent" 
- Foreground="White"
- BorderThickness="0"
- FontWeight="Bold"
- Margin="10 0 0 0" Click="SpaServiceOrderManagementWindow_Click"/>
-            </StackPanel>
-        </StackPanel>
+    <Window.Resources>
+        <!-- Современные стили -->
+        <Style x:Key="ModernMenuItemStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="15,12"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="32"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Viewbox Width="20" Height="20" Grid.Column="0">
+                                    <TextBlock x:Name="icon" 
+                                           FontFamily="Segoe MDL2 Assets" 
+                                           VerticalAlignment="Center"
+                                           Text="{TemplateBinding Tag}"/>
+                                </Viewbox>
+                                <ContentPresenter Grid.Column="1" 
+                                                  VerticalAlignment="Center"
+                                                  Margin="12,0,0,0"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#E6EEF8"/>
+                                <Setter Property="Foreground" Value="#FF4A6FAE"/>
+                                <Setter TargetName="icon" Property="Foreground" Value="#FF4A6FAE"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#D0E0F0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="MenuHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="20,24,20,16"/>
+            <Setter Property="Foreground" Value="#FF4A6FAE"/>
+        </Style>
+
+        <Style x:Key="WindowControlButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#666"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Width" Value="45"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#EEE"/>
+                    <Setter Property="Foreground" Value="#333"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="#FFF0F5FF">
+        <!-- Основное содержимое -->
+        <Grid>
+            <!-- Заголовок окна с кнопками управления -->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Панель заголовка -->
+            <Border Grid.Row="0" Background="#FF4A6FAE">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Управление отелем" 
+                               VerticalAlignment="Center"
+                               Margin="20,0"
+                               Foreground="White"
+                               FontSize="16"/>
+
+                    <StackPanel Orientation="Horizontal" Grid.Column="1">
+                        <Button Style="{StaticResource WindowControlButton}" Content="─" 
+                                ToolTip="Свернуть" Click="MinimizeWindow_Click"/>
+                        <Button Style="{StaticResource WindowControlButton}" Content="□" 
+                                ToolTip="Развернуть" Click="MaximizeWindow_Click"/>
+                        <Button Style="{StaticResource WindowControlButton}" Content="✕" 
+                                ToolTip="Закрыть" Click="CloseWindow_Click"
+                                Foreground="White" Background="#E81123"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Основное содержимое -->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="240"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Боковое меню -->
+                <Border Grid.Column="0" Background="#FFF0F5FF" BorderBrush="#E0E0E0" BorderThickness="0,0,1,0">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <TextBlock Text="Главное меню" Style="{StaticResource MenuHeaderStyle}"/>
+
+                            <Button x:Name="RoomCategoryManagementWindow"
+                                    Content="Категории номеров" 
+                                    Style="{StaticResource ModernMenuItemStyle}"
+                                    Tag="&#xE8A1;"
+                                    Click="RoomCategoryManagementWindow_Click"/>
+
+                            <Button x:Name="ServiceBtn"
+                                    Content="Услуги" 
+                                    Style="{StaticResource ModernMenuItemStyle}"
+                                    Tag="&#xE715;"
+                                    Click="ServiceButton_Click"/>
+
+                            <Button x:Name="ServiceOrderBtn"
+                                    Content="Заказы услуг" 
+                                    Style="{StaticResource ModernMenuItemStyle}"
+                                    Tag="&#xE8CB;"
+                                    Click="ServiceOrderButton_Click"/>
+
+                            <Button x:Name="SpaServiseBtn"
+                                    Content="Спа-услуги" 
+                                    Style="{StaticResource ModernMenuItemStyle}"
+                                    Tag="&#xEB44;"
+                                    Click="SpaServiceButton_Click"/>
+
+                            <TextBlock Text="Управление" Style="{StaticResource MenuHeaderStyle}"/>
+
+                            <Button x:Name="EmployeeMenegement"
+                                    Content="Сотрудники" 
+                                    Style="{StaticResource ModernMenuItemStyle}"
+                                    Tag="&#xE77B;"
+                                    Click="EmployeeView_Click"/>
+
+                            <Button x:Name="BookingMenegement"
+                                    Content="Бронирования" 
+                                    Style="{StaticResource ModernMenuItemStyle}"
+                                    Tag="&#xE787;"
+                                    Click="BookingMenegement_Click"/>
+
+                            <Button x:Name="GuestManagementWindow"
+                                    Content="Гости" 
+                                    Style="{StaticResource ModernMenuItemStyle}"
+                                    Tag="&#xE716;"
+                                    Click="GuestManagementWindow_Click"/>
+
+                            <Button x:Name="SpaServiceOrderManagementWindow"
+                                    Content="Заказы СПА" 
+                                    Style="{StaticResource ModernMenuItemStyle}"
+                                    Tag="&#xE9A5;"
+                                    Click="SpaServiceOrderManagementWindow_Click"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+
+                <!-- Основная область контента -->
+                <Border Grid.Column="1" Background="White">
+                    <Grid>
+                        <!-- Здесь будет отображаться контент выбранного раздела -->
+                        <Grid Background="#FAFAFA">
+                            <TextBlock Text="Добро пожаловать в систему управления отелем" 
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontSize="18"
+                                       Foreground="#666"
+                                       TextWrapping="Wrap"
+                                       TextAlignment="Center"/>
+                        </Grid>
+
+                        <!-- Статус бар -->
+                        <Border VerticalAlignment="Bottom" Height="40" Background="#FFF0F5FF" 
+                                BorderThickness="0,1,0,0" BorderBrush="#E0E0E0">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,20,0">
+                                <TextBlock Text="Статус: " Foreground="#666" Margin="0,0,5,0"/>
+                                <TextBlock Text="Готов к работе" Foreground="#FF4A6FAE" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
     </Grid>
 </Window>

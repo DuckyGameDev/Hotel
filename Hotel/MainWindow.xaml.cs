@@ -243,5 +243,16 @@ namespace Hotel
             manageWindow.Show();
             this.Close();
         }
+
+        private void SPABtn_Click(object sender, RoutedEventArgs e)
+        {
+            var spaOrderWimdow = new SpaOrderWindow();
+            spaOrderWimdow.Show();
+            this.Close();
+        }
+
+
+
+
     }
 }

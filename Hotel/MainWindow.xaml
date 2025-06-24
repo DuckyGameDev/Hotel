@@ -32,6 +32,11 @@
                            FontWeight="Bold"
                            Margin="20,0,0,0"/>
 
+                <Button x:Name="SPABtn"
+                             Content="СПА-процедуры" 
+                             Style="{StaticResource HeaderButtonStyle}"
+                             Margin="20,0,0,0" Click="SPABtn_Click"/>    
+
                 <Button x:Name="ManageBtn"
                         Content="Управление" 
                         Style="{StaticResource HeaderButtonStyle}"

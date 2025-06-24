@@ -5,12 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hotel.Windows"
         mc:Ignorable="d"
-        Title="Регистрация" Height="550" Width="800">
-    <Grid Background="#FFF0F5FF" Margin="0,0,-150,-296">
+        Title="Регистрация" Height="652" Width="882">
+    <Grid Background="#FFF0F5FF">
         <Border Background="White" 
                 CornerRadius="5"
                 Width="320"
                 Padding="20"
+                HorizontalAlignment="Center"
                 VerticalAlignment="Center">
             <StackPanel>
                 <!-- Заголовок -->
