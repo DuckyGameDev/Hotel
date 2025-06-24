@@ -4,8 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,15 +15,50 @@ using Application = Hotel.Data.Application;
 
 namespace Hotel.Windows
 {
-    public partial class BookingWindow : Window
+    public partial class BookingWindow : Window, INotifyPropertyChanged
     {
         public Room Room { get; set; }
         public string GuestFullName { get; set; }
         public string GuestPassport { get; set; }
         public string GuestPhone { get; set; }
         public string GuestEmail { get; set; }
-        public DateTime CheckInDate { get; set; } = DateTime.Today;
-        public DateTime CheckOutDate { get; set; } = DateTime.Today.AddDays(1);
+
+        private DateTime _checkInDate = DateTime.Today;
+        public DateTime CheckInDate
+        {
+            get => _checkInDate;
+            set
+            {
+                if (_checkInDate != value)
+                {
+                    _checkInDate = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(TotalPrice));
+
+                    // Автоматическая корректировка даты выезда
+                    if (CheckOutDate < value || CheckOutDate == value)
+                    {
+                        CheckOutDate = value.AddDays(1);
+                    }
+                }
+            }
+        }
+
+        private DateTime _checkOutDate = DateTime.Today.AddDays(1);
+        public DateTime CheckOutDate
+        {
+            get => _checkOutDate;
+            set
+            {
+                if (_checkOutDate != value)
+                {
+                    _checkOutDate = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(TotalPrice));
+                }
+            }
+        }
+
         public decimal TotalPrice => CalculateTotalPrice();
         public bool IsEditMode { get; private set; }
         public Booking CurrentBooking { get; private set; }
@@ -29,6 +66,12 @@ namespace Hotel.Windows
         public ObservableCollection<ServiceSelection> AvailableServices { get; set; } = new ObservableCollection<ServiceSelection>();
 
         private ApplicationDbContext _context;
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
         public BookingWindow(Room room) : this(null, false)
         {
@@ -38,6 +81,10 @@ namespace Hotel.Windows
             LoadUserData();
             LoadServices();
             InitializeDatePickers();
+
+            // Подписка на изменение дат
+            CheckInDatePicker.SelectedDateChanged += (s, e) => OnPropertyChanged(nameof(TotalPrice));
+            CheckOutDatePicker.SelectedDateChanged += (s, e) => OnPropertyChanged(nameof(TotalPrice));
         }
 
         public BookingWindow(Booking booking, bool isEditMode)
@@ -48,7 +95,6 @@ namespace Hotel.Windows
 
             if (isEditMode && booking != null)
             {
-                // Получаем бронирование с AsNoTracking и затем присоединяем
                 CurrentBooking = _context.Bookings
                     .Include(b => b.Room)
                     .ThenInclude(r => r.Category)
@@ -60,7 +106,6 @@ namespace Hotel.Windows
 
                 if (CurrentBooking != null)
                 {
-                    // Присоединяем и начинаем отслеживать
                     _context.Bookings.Attach(CurrentBooking);
                     _context.Entry(CurrentBooking).State = EntityState.Modified;
 
@@ -81,6 +126,10 @@ namespace Hotel.Windows
 
             DataContext = this;
             InitializeDatePickers();
+
+            // Подписка на изменение дат
+            CheckInDatePicker.SelectedDateChanged += (s, e) => OnPropertyChanged(nameof(TotalPrice));
+            CheckOutDatePicker.SelectedDateChanged += (s, e) => OnPropertyChanged(nameof(TotalPrice));
         }
 
         public BookingWindow(Room room, DateOnly checkInDate, DateOnly checkOutDate)
@@ -94,6 +143,10 @@ namespace Hotel.Windows
             LoadUserData();
             LoadServices();
             InitializeDatePickers();
+
+            // Подписка на изменение дат
+            CheckInDatePicker.SelectedDateChanged += (s, e) => OnPropertyChanged(nameof(TotalPrice));
+            CheckOutDatePicker.SelectedDateChanged += (s, e) => OnPropertyChanged(nameof(TotalPrice));
         }
 
         protected override void OnClosed(EventArgs e)
@@ -174,7 +227,7 @@ namespace Hotel.Windows
                     CurrentBooking?.Serviceorders.FirstOrDefault(so => so.ServiceId == service.ServiceId) :
                     null;
 
-                AvailableServices.Add(new ServiceSelection
+                var serviceItem = new ServiceSelection
                 {
                     Service = service,
                     IsSelected = selectedServiceIds.Contains(service.ServiceId),
@@ -183,7 +236,18 @@ namespace Hotel.Windows
                         DateTime.Today,
                     ServiceTime = serviceOrder?.ServiceTime ?? new TimeOnly(12, 0),
                     AvailableTimes = GetAvailableTimes()
-                });
+                };
+
+                // Подписка на изменение состояния услуги
+                serviceItem.PropertyChanged += (sender, e) =>
+                {
+                    if (e.PropertyName == nameof(ServiceSelection.IsSelected))
+                    {
+                        OnPropertyChanged(nameof(TotalPrice));
+                    }
+                };
+
+                AvailableServices.Add(serviceItem);
             }
 
             ServicesDataGrid.ItemsSource = AvailableServices;
@@ -203,14 +267,11 @@ namespace Hotel.Windows
             {
                 if (IsEditMode && CurrentBooking != null)
                 {
-                    // Обновляем основные свойства
                     CurrentBooking.CheckInDate = DateOnly.FromDateTime(CheckInDate);
                     CurrentBooking.CheckOutDate = DateOnly.FromDateTime(CheckOutDate);
-                    
-                    // Обновляем связанные сервисы
+
                     UpdateSelectedServices(CurrentBooking);
-                    
-                    // Обновляем статус комнаты
+
                     Room.Status = "занят";
                     _context.Entry(Room).State = EntityState.Modified;
                 }
@@ -266,17 +327,17 @@ namespace Hotel.Windows
         {
             var sb = new StringBuilder();
             sb.AppendLine(ex.Message);
-            
+
             Exception inner = ex.InnerException;
             int level = 1;
-            
+
             while (inner != null)
             {
                 sb.AppendLine(new string(' ', level * 2) + "↳ " + inner.Message);
                 inner = inner.InnerException;
                 level++;
             }
-            
+
             return sb.ToString();
         }
 
@@ -294,7 +355,10 @@ namespace Hotel.Windows
 
         private decimal CalculateTotalPrice()
         {
-            decimal total = Room.Category.PricePerNight * (CheckOutDate - CheckInDate).Days;
+            int nights = (CheckOutDate - CheckInDate).Days;
+            nights = nights > 0 ? nights : 1; // Минимум 1 ночь
+
+            decimal total = Room.Category.PricePerNight * nights;
 
             foreach (var service in AvailableServices.Where(s => s.IsSelected))
             {
@@ -306,12 +370,10 @@ namespace Hotel.Windows
 
         private void UpdateSelectedServices(Booking booking)
         {
-            // Загружаем текущие сервисные заказы
             var existingOrders = _context.Serviceorders
                 .Where(so => so.BookingId == booking.BookingId)
                 .ToList();
 
-            // Удаляем невыбранные сервисы
             var servicesToRemove = existingOrders
                 .Where(eo => !AvailableServices.Any(s => s.IsSelected && s.Service.ServiceId == eo.ServiceId))
                 .ToList();
@@ -321,7 +383,6 @@ namespace Hotel.Windows
                 _context.Serviceorders.Remove(service);
             }
 
-            // Добавляем или обновляем выбранные сервисы
             foreach (var selectedService in AvailableServices.Where(s => s.IsSelected))
             {
                 var existingOrder = existingOrders
@@ -367,12 +428,31 @@ namespace Hotel.Windows
         }
     }
 
-    public class ServiceSelection
+    public class ServiceSelection : INotifyPropertyChanged
     {
+        private bool _isSelected;
+
         public Service Service { get; set; }
-        public bool IsSelected { get; set; }
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set
+            {
+                if (_isSelected != value)
+                {
+                    _isSelected = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
         public DateTime ServiceDate { get; set; }
         public TimeOnly ServiceTime { get; set; }
         public Dictionary<TimeOnly, string> AvailableTimes { get; set; }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }
