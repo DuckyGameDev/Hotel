@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <None Remove="Images\avatar.png" />
+    <None Remove="Images\Room.jpg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,6 +43,9 @@
 
   <ItemGroup>
     <Resource Include="Images\avatar.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\Room.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
